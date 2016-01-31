@@ -1,3 +1,6 @@
+## Define actions to take for route visited
+#
+
 from flask import render_template, redirect, url_for, session, current_app
 from .. import db
 from ..models import User

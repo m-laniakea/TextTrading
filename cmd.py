@@ -22,11 +22,11 @@ from app.models import User, Role, Book
 from flask.ext.script import Manager, Shell
 
 
-app = create_app(os.getenv('FLASK_CONFIG') or 'default')
+app = create_app('default')
 manager = Manager(app)
 
 def shell_context():
-    return dict(app=app, db=db, User=User, Role=Role)
+    return dict(app=app, db=db, Book=Book, User=User, Role=Role)
 
 manager.add_command("shell", Shell(make_context=shell_context))
 
