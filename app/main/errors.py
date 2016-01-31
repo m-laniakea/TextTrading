@@ -1,3 +1,5 @@
+## Define possible errors & actions to take
+
 from . import main
 from flask import render_template
 

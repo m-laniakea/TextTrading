@@ -1,3 +1,5 @@
+## Standard configuration file
+
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -11,9 +13,11 @@ class Config:
 class devConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
 
 cfg = {
-        'development' : devConfig,
+        'dev' : devConfig,
 
         'default' : devConfig
 }
