@@ -1,5 +1,20 @@
-## High-level control module
-#  
+## 
+# High-level control module
+#
+# This is the main program for our website
+#
+# Launch this application in Python virtual environment 2.7 for proper 
+# functionality.  
+#
+# Dependencies are to be installed with
+#
+#		pip install -r reqs.txt
+#
+#
+# @author eir; Ruby Kassalla; Erik Greif; Cate Yochum; Bruce Harr;
+#         Erick Ngo; Aaron Gupta;
+# @date   2016.01.30
+##
 
 import os
 from app import create_app, db
