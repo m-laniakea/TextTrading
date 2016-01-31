@@ -6,6 +6,12 @@ __pycache__/
 # C extensions
 *.so
 
+# Vim savefiles
+*~
+
+# SQLite files
+*sql*
+
 # Distribution / packaging
 .Python
 nv/
