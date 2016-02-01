@@ -19,15 +19,22 @@
             <a class="navbar-brand" href="/">TextX</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-                <form class="navbar-form navbar-right">
-                <div class="form-group">
-                        <input type="text" placeholder="email@domain.com" class="form-control">
-                </div>
-                 <div class="form-group">
-                        <input type="password" placeholder="password" class="form-control">
-                </div>
-                <button type="submit" class="btn btn-success">Log in</button>
+                <div class="navbar-form navbar-right">
+
+                {% if current_user.is_anonymous %}
+                <form action="" method="post" name="login" class="form-group">
+                        {{ form.hidden_tag() }}
+                        {{ form.email(class="form-control", placeholder="email@domain.com") }}
+                        {{ form.password(class="form-control", placeholder="password") }}
+                        <button type="submit" class="btn btn-success">Log in</button>
                 </form>
+
+                {% else %}
+                <div class="form-group"><h4>Signed in as: {{ current_user.username }}    </h4></div>
+                <a class="btn btn-info" role="button" href="/logout">Log out</a>
+                {% endif %}
+               
+                </div>
                 
                 
         </div>
@@ -37,7 +44,25 @@
 
 {% block content %}
 <div class="container">
-    {% block page_content %}{% endblock %}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class=flashes>
+      {% for category, message in messages %}
+
+        <div class="alert alert-{{ category }} alert-dismissible fade in" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          {{ message }}
+        </div>
+
+      {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+
+  {% block page_content %}{% endblock %}
 </div>
 {% endblock %}
 

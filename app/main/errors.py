@@ -1,7 +1,8 @@
 ## Define possible errors & actions to take
 
 from . import main
-from flask import render_template
+from flask import render_template, flash
+from forms import LoginForm
 
 
 ##
@@ -9,4 +10,6 @@ from flask import render_template
 ##
 @main.app_errorhandler(404)
 def page_not_found(e):
-    return render_template('404.html'), 404
+    form = LoginForm()
+    flash('The page requested could not be found. Here\'s a haiku instead.', 'info')
+    return render_template('404.html', form=form), 404

@@ -12,6 +12,9 @@ __pycache__/
 # SQLite files
 *sql*
 
+# Migration files
+migrations/*
+
 # Distribution / packaging
 .Python
 nv/
