@@ -30,8 +30,8 @@
                 </form>
 
                 {% else %}
-                <div class="form-group">{{ current_user.username }}</div>
-                <button type="button" class="btn btn-info">Sign out</button>
+                <div class="form-group"><h4>Signed in as: {{ current_user.username }}    </h4></div>
+                <a class="btn btn-info" role="button" href="/logout">Log out</a>
                 {% endif %}
                
                 </div>
@@ -49,7 +49,7 @@
       <div class=flashes>
       {% for category, message in messages %}
 
-        <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+        <div class="alert alert-{{ category }} alert-dismissible fade in" role="alert">
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
