@@ -11,15 +11,18 @@ Getting started on Unix:
       # pip install -r reqs.txt
       # python cmd.py runserver
       
-Populate the database
+Using the database:
 
-	(In nv environment)
-	# ./cmd shell
-	# User.populate()
-	Ctrl + D
-	# ./cmd runserver
-Use Discord username + "@uw.edu", e.g. Ruby@uw.edu, password is "flipthetable"
-Erick is just erick@uw.edu
+    Population:
+      (In nv environment)
+      # ./cmd shell
+      # User.populate()
+      Ctrl + D
+      # ./cmd runserver
+    
+    Access:
+      Use Discord username + "@uw.edu", e.g. Ruby@uw.edu, password is "flipthetable"
+      Erick is just erick@uw.edu
 	
 
 Getting started on Windows:
@@ -33,7 +36,7 @@ Getting started on Windows:
     Run: (or run start.bat as Administrator)
       # SET PYTHONPATH=C:\Python27;C:\Python27\Lib;C:\Python27\DLLs
       # SET PYTHONHOME=C:\Python27
-	  # pip install virtualenv
+      # pip install virtualenv
       # virtualenv-2.7 nv
       # source nv/bin/activate
       # pip install -r reqs.txt
@@ -47,4 +50,4 @@ Initializing a blank database from model definitions:
 
       # python cmd.py shell
       # db.create_all()
-      Ctrl + D [or Ctrl + C on Windows]
+      Ctrl + D
