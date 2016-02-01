@@ -1,5 +1,14 @@
 @ECHO OFF
+PUSHD %~dp0
 
 ECHO Starting TextX Application in Python virtual environment 2.7...
 
-ECHO This file has not yet been implemented.  If you are using Windows, feel free to translate the steps in the Unix launcher start.sh and implement them for Windows in this file.
+SET PYTHONPATH=C:\Python27;C:\Python27\Lib;C:\Python27\DLLs
+SET PYTHONHOME=C:\Python27
+pip install virtualenv
+virtualenv-2.7 nv
+source nv/bin/activate
+pip install -r reqs.txt
+python cmd.py runserver
+
+POPD
