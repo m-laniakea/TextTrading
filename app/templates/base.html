@@ -20,6 +20,8 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
                 <form class="navbar-form navbar-right">
+
+                {% if current_user.is_anonymous %}
                 <div class="form-group">
                         <input type="text" placeholder="email@domain.com" class="form-control">
                 </div>
@@ -27,6 +29,12 @@
                         <input type="password" placeholder="password" class="form-control">
                 </div>
                 <button type="submit" class="btn btn-success">Log in</button>
+
+                {% else %}
+                <div class="form-group">{{ current_user.username }}</div>
+                <button type="button" class="btn btn-info">Sign out</button>
+                {% endif %}
+               
                 </form>
                 
                 
@@ -37,6 +45,24 @@
 
 {% block content %}
 <div class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class=flashes>
+      {% for category, message in messages %}
+
+        <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          {{ message }}
+        </div>
+
+      {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+
     {% block page_content %}{% endblock %}
 </div>
 {% endblock %}

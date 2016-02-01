@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 ## 
 # High-level control module
 #
@@ -19,16 +20,20 @@
 import os
 from app import create_app, db
 from app.models import User, Role, Book
+from flask.ext.migrate import Migrate, MigrateCommand
 from flask.ext.script import Manager, Shell
 
 
 app = create_app('default')
+migrate = Migrate(app, db)
 manager = Manager(app)
 
 def shell_context():
     return dict(app=app, db=db, Book=Book, User=User, Role=Role)
 
+# Define CLI commands
 manager.add_command("shell", Shell(make_context=shell_context))
+manager.add_command("db", MigrateCommand)
 
 
 if __name__ == '__main__':
