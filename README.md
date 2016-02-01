@@ -10,6 +10,17 @@ Getting started on Unix:
       # source nv/bin/activate
       # pip install -r reqs.txt
       # python cmd.py runserver
+      
+Populate the database
+
+	(In nv environment)
+	# ./cmd shell
+	# User.populate()
+	Ctrl + D
+	# ./cmd runserver
+Use Discord username + "@uw.edu", e.g. Ruby@uw.edu, password is "flipthetable"
+Erick is just erick@uw.edu
+	
 
 Getting started on Windows:
 
