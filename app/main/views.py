@@ -14,7 +14,9 @@ from datetime import datetime
 ##
 @main.route('/', methods=['GET','POST'])
 def index():
-    flash("Hello",'success')
+    flash("Hello, user alerts are indeed working.",'success')
+    flash("You can close this alert by clicking the x.", 'warning')
+    #flash("Oh no! Something went wrong", 'danger')
     return render_template('index.html', current_time=datetime.utcnow())
     
 
