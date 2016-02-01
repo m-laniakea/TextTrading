@@ -28,6 +28,10 @@ Getting started on Windows:
       # pip install -r reqs.txt
       # python cmd.py runserver
 
+Viewing the site:
+
+	Open "http://localhost:5000" in your web browser
+
 Initializing a blank database from model definitions:
 
       # python cmd.py shell
