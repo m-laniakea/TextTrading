@@ -31,6 +31,7 @@ manager = Manager(app)
 def shell_context():
     return dict(app=app, db=db, Book=Book, User=User, Role=Role)
 
+
 # Define CLI commands
 manager.add_command("shell", Shell(make_context=shell_context))
 manager.add_command("db", MigrateCommand)
