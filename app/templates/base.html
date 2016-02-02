@@ -19,22 +19,24 @@
             <a class="navbar-brand" href="/">TextX</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-                <div class="navbar-form navbar-right">
+                {% if show_user_navbar %}
+                        <div class="navbar-form navbar-right">
 
-                {% if current_user.is_anonymous %}
-                <form action="" method="post" name="login" class="form-group">
-                        {{ form.hidden_tag() }}
-                        {{ form.email(class="form-control", placeholder="email@domain.com") }}
-                        {{ form.password(class="form-control", placeholder="password") }}
-                        <button type="submit" class="btn btn-success">Log in</button>
-                </form>
+                        {% if current_user.is_anonymous %}
+                            <form action="" method="post" name="login" class="form-group">
+                                {{ form.hidden_tag() }}
+                                {{ form.email(class="form-control", placeholder="email@domain.com") }}
+                                {{ form.password(class="form-control", placeholder="password") }}
+                                <button type="submit" class="btn btn-success">Log in</button>
+                            </form>
 
-                {% else %}
-                <div class="form-group"><h4>Signed in as: {{ current_user.username }}    </h4></div>
-                <a class="btn btn-info" role="button" href="/logout">Log out</a>
+                        {% else %}
+                                <div class="form-group"><h4>Signed in as: {{ current_user.username }}</h4></div>
+                                <a class="btn btn-info" role="button" href="/logout">Log out</a>
+                                </div>
+                        {% endif %}
+
                 {% endif %}
-               
-                </div>
                 
                 
         </div>

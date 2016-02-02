@@ -23,4 +23,4 @@ def page_not_found(e):
         flash('Invalid email + password combination.', 'danger')
 
     flash('The page requested could not be found. Here\'s a haiku instead.', 'info')
-    return render_template('404.html', form=form), 404
+    return render_template('404.html', form=form, show_user_navbar=True), 404
