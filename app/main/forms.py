@@ -9,7 +9,7 @@ class LoginForm(Form):
 
 class SignupForm(Form):
     email = StringField('email', validators=[Required(), Length(1, 64), Email()])
-    username = StringField('username', validators=[Required(), Length(1,64), Regexp('^[a-zA-Z0-9][\._a-zA-Z0-9]*$', 0, 'Your username may start with an upper or lowercase letter. Only lowercase letters, numbers, underscores, and periods may follow')])
+    username = StringField('username', validators=[Required(), Length(1,64), Regexp('^[a-zA-Z0-9][\._a-z0-9]*$', 0, 'Your username may start with an upper or lowercase letter. Only lowercase letters, numbers, underscores, and periods may follow')])
 
     password = PasswordField('password', validators = [Required(), EqualTo('password_confirmation', message='Your passwords must match.')]) 
     password_confirmation = PasswordField('Confirm Password', validators = [Required()])

@@ -1,6 +1,6 @@
 ## Define actions to take for route visited
 from flask import render_template, redirect, request, url_for, session, current_app, flash
-from flask.ext.login import login_user, logout_user, login_required
+from flask.ext.login import login_user, logout_user, login_required, current_user
 from .. import db
 from ..models import User
 from . import main
@@ -54,6 +54,11 @@ def logout():
 @main.route('/register', methods=['GET','POST'])
 def register():
     form = SignupForm()
+
+    if current_user.is_authenticated:
+        flash('You\'ve already registered, ' + current_user.username + '.', 'info')
+        return redirect(url_for('main.index'))
+
     if form.validate_on_submit():
         new_user = User(email=form.email.data, username=form.username.data, set_password = form.password.data)
         db.session.add(new_user)
