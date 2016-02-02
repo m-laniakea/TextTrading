@@ -63,7 +63,8 @@ def register():
         new_user = User(email=form.email.data, username=form.username.data, set_password = form.password.data)
         db.session.add(new_user)
         db.session.commit()
-        flash('Welcome to TextX, ' + new_user.username + '! You may now log in.', 'success')
+        login_user(new_user, True)
+        flash('Welcome to TextX, ' + new_user.username + '! You\'ve been logged in.', 'success')
         return redirect(url_for('main.index'))
     return render_template('register.html', form=form, show_user_navbar=False)
     
