@@ -1,4 +1,6 @@
-## Define possible errors & actions to take
+##
+# Define possible errors & actions to take
+##
 
 from . import main
 from ..models import User
@@ -24,3 +26,9 @@ def page_not_found(e):
 
     flash('The page requested could not be found. Here\'s a haiku instead.', 'info')
     return render_template('404.html', form=form, show_user_navbar=True), 404
+
+##
+# Define action for internal server error
+##
+#@main.app_errorhandler(500)
+#def error_internal(e):

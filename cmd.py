@@ -2,10 +2,15 @@
 ## 
 # High-level control module
 #
+## Usage hints: "./cmd.py <command> --help"
+#  or      "python cmd.py <command> --help"
+#
 # This is the main program for our website
 #
 # Launch this application in Python virtual environment 2.7 for proper 
 # functionality.  
+#
+# Currently this application depends on ** sqlite **
 #
 # Dependencies are to be installed with
 #
@@ -23,9 +28,13 @@ from app.models import User, Role, Book
 from flask.ext.migrate import Migrate, MigrateCommand
 from flask.ext.script import Manager, Shell
 
-
+# Create app using default configuration from cfg.py
 app = create_app('default')
+
+# Set up migrate for db operations
 migrate = Migrate(app, db)
+
+# Set up CLI interface
 manager = Manager(app)
 
 def shell_context():

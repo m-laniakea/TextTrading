@@ -1,5 +1,7 @@
-## App Initializer
-#  Prepare for launch
+##
+# App Initializer
+# Prepare for launch
+##
 
 from flask import Flask 
 from flask.ext.login import LoginManager
@@ -25,6 +27,9 @@ def create_app(name):
     bootstrap.init_app(app)
     moment.init_app(app)
 
+    ##
+    # Prepare blueprint for use in main/__init__.py
+    ##
     from .main import main as template
     app.register_blueprint(template)
 

@@ -1,4 +1,7 @@
-## Database definitions for SQLAlchemy
+##
+# Database definitions for SQLAlchemy
+##
+
 from . import db
 from flask.ext.login import UserMixin
 from . import login_manager
@@ -7,17 +10,18 @@ from werkzeug.security import check_password_hash, generate_password_hash
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
+##
 # Users have:
 # *one role_id 
 # *many books
 #
-# UserMixin provides
+##  UserMixin provides:
 #
 #   is_authenticated()
 #   is_anonymous()
 #
 #   get_id()    # Return user identifier 
+##
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
@@ -50,20 +54,22 @@ class User(db.Model, UserMixin):
             user = User(email=emails[i], username=unames[i], set_password = 'flipthetable')
             db.session.add(user)
         
-        db.session.commit()
+        #db.session.commit()
 
-
+##
 # Books have:
 # *one owner (Parent)
+##
 class Book(db.Model):
     __tablename__ = 'books'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(128), unique=False, index=False)
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-
+##
 # Roles have:
 # *one user (Parent)
+##
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
