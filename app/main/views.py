@@ -7,7 +7,7 @@ from flask.ext.login import login_user, logout_user, login_required, current_use
 from .. import db
 from ..models import User
 from . import main
-from . forms import LoginForm, SignupForm
+from . forms import LoginForm, SignupForm, flash_errors
 from datetime import datetime
 
 ##
@@ -69,6 +69,8 @@ def register():
         login_user(new_user, True)
         flash('Welcome to TextX, ' + new_user.username + '! You\'ve been logged in.', 'success')
         return redirect(url_for('main.index'))
+
+    flash_errors(form)
     return render_template('register.html', form=form, show_user_navbar=False)
     
 

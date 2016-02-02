@@ -21,8 +21,11 @@ Using the database:
       # ./cmd runserver
     
     Access:
+      Since the GitHub server is public, we will not use real emails.  Spam bots will have lots of fun hitting these fake addresses. 
+      
       Use Discord username + "@uw.edu", e.g. Ruby@uw.edu, password is "flipthetable"
-      Erick is just erick@uw.edu
+      If you used your NetID as your discord name, it will be your first name. 
+      For example: Erick is just erick@uw.edu
 	
 
 Getting started on Windows:
