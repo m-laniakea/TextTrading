@@ -68,5 +68,20 @@ def register():
 
     flash_errors(form)
     return render_template('register.html', form=form, disable_user_login=True)
+
+
+##
+# Handle user profiles route
+##
+@main.route('/u/<username>', methods=['GET', 'POST'])
+def profile(username):
+    form = LoginForm()
+
+    user = User.query.filter_by(username=username).first()
+    if user is not None:
+        return render_template('profile.html', user=user)
+
+    flash('This user does not exist', 'info')
+    abort(404)
     
 

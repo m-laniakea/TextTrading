@@ -24,7 +24,7 @@
 
 import os
 from app import create_app, db
-from app.models import User, Role, Book
+from app.models import User, Book
 from flask.ext.migrate import Migrate, MigrateCommand
 from flask.ext.script import Manager, Shell
 
@@ -38,7 +38,7 @@ migrate = Migrate(app, db)
 manager = Manager(app)
 
 def shell_context():
-    return dict(app=app, db=db, Book=Book, User=User, Role=Role)
+    return dict(app=app, db=db, Book=Book, User=User)
 
 
 # Define CLI commands

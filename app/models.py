@@ -6,6 +6,7 @@ from . import db
 from flask.ext.login import UserMixin
 from . import login_manager
 from werkzeug.security import check_password_hash, generate_password_hash
+from datetime import datetime
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -29,8 +30,11 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(64), unique=True, index=True)
     email = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
-    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     books = db.relationship("Book", backref="owner")
+    user_since = db.Column(db.DateTime(), default=datetime.utcnow)
+    last_online = db.Column(db.DateTime(), default=datetime.utcnow) 
+    rating = db.Column(db.Float(precision=3), default = 0)
+    ratings_count = db.Column(db.Integer, default = 0)
 
     @property
     def password(self):
@@ -54,7 +58,7 @@ class User(db.Model, UserMixin):
             user = User(email=emails[i], username=unames[i], set_password = 'flipthetable')
             db.session.add(user)
         
-        #db.session.commit()
+        db.session.commit()
 
 ##
 # Books have:
@@ -63,18 +67,9 @@ class User(db.Model, UserMixin):
 class Book(db.Model):
     __tablename__ = 'books'
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(128), unique=False, index=False)
+    title = db.Column(db.String(128), unique=False, index=True)
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-##
-# Roles have:
-# *one user (Parent)
-##
-class Role(db.Model):
-    __tablename__ = 'roles'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    users = db.relationship('User', backref='role', lazy='dynamic')
 
 
 
