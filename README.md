@@ -8,17 +8,17 @@ Getting started on Unix:
     Run: (or run start.sh elevated)
       # virtualenv-2.7 nv
       # source nv/bin/activate
-      # pip install -r reqs.txt
-      # python cmd.py runserver
+      # sudo pip install -r reqs.txt
+      # ./cmd.py runserver
       
 Using the database:
 
     Population:
       (In nv environment)
-      # ./cmd shell
+      # ./cmd.py shell
       # User.populate()
       Ctrl + D
-      # ./cmd runserver
+      # ./cmd.py runserver
     
     Access:
       Since the GitHub server is public, we will not use real emails.  Spam bots will have lots of fun hitting these fake addresses. 
@@ -44,6 +44,14 @@ Getting started on Windows:
       # source nv/bin/activate
       # pip install -r reqs.txt
       # python cmd.py runserver
+
+Getting started on Mac OS:
+
+	Install Python 2.7 with Easy Install
+	- Open Terminal
+	- sudo easy_install pip
+	
+	Run: (use Unix run instructions)
 
 Viewing the site:
 

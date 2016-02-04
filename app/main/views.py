@@ -7,7 +7,7 @@ from flask.ext.login import login_user, logout_user, login_required, current_use
 from .. import db
 from ..models import User
 from . import main
-from . forms import LoginForm, SignupForm, flash_errors
+from . forms import LoginForm, SignupForm, flash_errors, process_login
 from datetime import datetime
 
 ##
@@ -29,15 +29,11 @@ from datetime import datetime
 @main.route('/', methods=['GET','POST'])
 def index():
     form = LoginForm()
-    
+
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user is not None and user.check_password(form.password.data):
-            login_user(user, True)
-            flash('Welcome, ' + user.username + ".", 'success')
-            return redirect(request.args.get('next') or url_for('main.index')) 
-        flash('Invalid email + password combination.', 'danger')
-    return render_template('index.html', current_time=datetime.utcnow(), form=form, show_user_navbar=True)
+        process_login(form)
+    
+    return render_template('index.html', current_time=datetime.utcnow(), form=form)
 
 
 ##
@@ -71,6 +67,6 @@ def register():
         return redirect(url_for('main.index'))
 
     flash_errors(form)
-    return render_template('register.html', form=form, show_user_navbar=False)
+    return render_template('register.html', form=form, disable_user_login=True)
     
 

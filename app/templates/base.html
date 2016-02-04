@@ -21,7 +21,7 @@
             <a class="navbar-brand" href="/books">Books</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-                {% if show_user_navbar %}
+                {% if not disable_user_login %}
                         <div class="navbar-form navbar-right">
 
                         {% if current_user.is_anonymous %}
@@ -30,6 +30,7 @@
                                 {{ form.email(class="form-control", placeholder="email@domain.com") }}
                                 {{ form.password(class="form-control", placeholder="password") }}
                                 <button type="submit" class="btn btn-success">Log in</button>
+                                <a type="button" class="btn btn-info" href='/register'>Register</a>
                             </form>
 
                         {% else %}
