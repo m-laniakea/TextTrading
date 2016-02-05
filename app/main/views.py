@@ -2,7 +2,7 @@
 # Define actions to take for route visited
 ##
 
-from flask import render_template, redirect, request, url_for, session, current_app, flash
+from flask import render_template, redirect, request, url_for, session, current_app, flash, abort
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from .. import db
 from ..models import User
