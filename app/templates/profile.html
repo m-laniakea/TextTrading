@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block page_content %}
 
+<h2>{{ user.username }}<small class="text-muted"> ~ Last online {{ moment(user.last_online).fromNow() }}. </small></h2>
 <div class="jumbotron">
   <div class="container">
-        <h2>{{ user.username }}<small class="text-muted"> ~ Last online {{ moment(user.last_online).fromNow() }}. </small></h2>
         <p>Using TextX since {{ moment(user.user_since).format('MMM Do YYYY') }}.</p>
         <p>
                 {% if user.ratings_count != 0 %}
@@ -15,12 +15,19 @@
   </div>
 </div>
 
-<div class="jumbotron">
+<h2>{{ user.username }}'s Books</h2>
   <div class="container">
-          <h2>{{ user.username }}'s Books</h2>
+          {% if books %}
+          <div class="list-group">
+                  {% for book in books %}
+                  <a type="button" class="list-group-item" href='/b/{{ book.id }}'>{{ book.title }}</a>
+                  {% endfor %}
+
+          {% else %}
+          <h4> No books yet :( </h4>
+          {% endif %}
 
   </div>
-</div>
 
 
 

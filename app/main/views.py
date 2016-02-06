@@ -42,7 +42,7 @@ def index():
 @main.route('/logout')
 @login_required
 def logout():
-    user.last_online = datetime.utcnow()
+    current_user.last_online = datetime.utcnow()
     logout_user()
     user = None
     flash('Logout successful', 'success')
@@ -79,10 +79,18 @@ def profile(username):
     form = LoginForm()
 
     user = User.query.filter_by(username=username).first()
-    if user is not None:
-        return render_template('profile.html', user=user)
+    if user:
+        books = user.books.all()
+        return render_template('profile.html', user=user, books=books)
 
     flash("\"" + username + '\" is not a member yet.', 'info')
     abort(404)
     
-
+##
+# Individual Books route
+# View book entry where url is unique identifier
+##
+@main.route('/b/<bookid>', methods=['GET', 'POST'])
+def book(bookid):
+    flash("Sorry, viewing individual books not supported yet.", "danger")
+    abort(404)
