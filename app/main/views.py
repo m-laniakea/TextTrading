@@ -42,6 +42,7 @@ def index():
 @main.route('/logout')
 @login_required
 def logout():
+    user.last_online = datetime.utcnow()
     logout_user()
     user = None
     flash('Logout successful', 'success')
@@ -81,7 +82,7 @@ def profile(username):
     if user is not None:
         return render_template('profile.html', user=user)
 
-    flash('This user does not exist', 'info')
+    flash("\"" + username + '\" is not a member yet.', 'info')
     abort(404)
     
 
