@@ -5,7 +5,7 @@
 from flask import render_template, redirect, request, url_for, session, current_app, flash, abort
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from .. import db
-from ..models import User
+from ..models import User, Book
 from . import main
 from . forms import LoginForm, SignupForm, flash_errors, process_login
 from datetime import datetime
@@ -93,5 +93,10 @@ def profile(username):
 ##
 @main.route('/b/<bookid>', methods=['GET', 'POST'])
 def book(bookid):
-    flash("Sorry, viewing individual books is not supported yet.", "danger")
+    book = Book.query.filter_by(id=bookid).first()
+    if book:
+        owner = User.query.filter_by(id=book.owner_id).first()
+        return render_template('book.html', book=book, owner=owner)
+
+    flash("This book does not exist.", "info")
     abort(404)
