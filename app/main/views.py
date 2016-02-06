@@ -93,5 +93,5 @@ def profile(username):
 ##
 @main.route('/b/<bookid>', methods=['GET', 'POST'])
 def book(bookid):
-    flash("Sorry, viewing individual books not supported yet.", "danger")
+    flash("Sorry, viewing individual books is not supported yet.", "danger")
     abort(404)

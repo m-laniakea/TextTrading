@@ -62,12 +62,18 @@ class User(db.Model, UserMixin):
         emails = ["Bruce@uw.edu", "Cate@uw.edu", "m-laniakea@uw.edu", "erick@uw.edu", "BitFracture@uw.edu", "Ruby@uw.edu"]
         unames = ["Bruce", "Cate", "m-laniakea", "erickgnoUW", "BitFracture", "Ruby"]
 
+        ## Populate db with user in the two lists, assign random rating
         for i in range(len(emails)):
-            user = User(email=emails[i], username=unames[i], set_password = 'flipthetable')
+            # Biased-Random integer to determine rating
+            tmp = 0 if randint(0,6) < 3 else randint(1000, 5000)
+
+            user = User(email = emails[i], username = unames[i], set_password = 'flipthetable',
+                    rating = tmp/1000.0, ratings_count = 0 if (tmp == 0) else randint(1, 88) )
             db.session.add(user)
 
-            for j in range(4):
-                book = Book(title = User.gen_placeholder(wordlist, 3), owner=user, author = User.gen_placeholder(wordlist, 2),
+            ## Gen fake books with random names, titles, prices
+            for j in range( randint(3, 8) ):
+                book = Book(title = User.gen_placeholder(wordlist, randint(1,3)), owner=user, author = User.gen_placeholder(wordlist, 2),
                         price = 0 if (randint(0,2) == 0 ) else randint(0,8888)/100.0)
                 db.session.add(book)
         
