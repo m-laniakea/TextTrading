@@ -31,7 +31,8 @@ def index():
     form = LoginForm()
 
     if form.validate_on_submit():
-        process_login(form)
+        if process_login(form):
+            return redirect(url_for('main.profile', username = current_user.username))
     
     return render_template('index.html', current_time=datetime.utcnow(), form=form)
 
@@ -92,5 +93,5 @@ def profile(username):
 ##
 @main.route('/b/<bookid>', methods=['GET', 'POST'])
 def book(bookid):
-    flash("Sorry, viewing individual books not supported yet.", "danger")
+    flash("Sorry, viewing individual books is not supported yet.", "danger")
     abort(404)
