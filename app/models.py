@@ -52,9 +52,12 @@ class User(db.Model, UserMixin):
     ##
     # Initiate & Populate db with users,
     # randomly generated book titles
+    #
+    # Requires dct.txt dictionary
     ##
     @staticmethod
     def populate():
+        # Initialize db with models from this file
         db.create_all()
         basedir = os.path.abspath(os.path.dirname(__file__))
         wordlist = [l.strip() for l in open(os.path.join(basedir, "dct.txt"))]
@@ -67,14 +70,14 @@ class User(db.Model, UserMixin):
             # Biased-Random integer to determine rating
             tmp = 0 if randint(0,6) < 3 else randint(1000, 5000)
 
-            user = User(email = emails[i], username = unames[i], set_password = 'flipthetable',
+            user = User(email = emails[i], username = unames[i], set_password = 'ftt',
                     rating = tmp/1000.0, ratings_count = 0 if (tmp == 0) else randint(1, 88) )
             db.session.add(user)
 
-            ## Gen fake books with random names, titles, prices
-            for j in range( randint(3, 8) ):
+            ## Gen fake books with random names, titles, prices, & conditions
+            for j in range( randint(2, 8) ):
                 book = Book(title = User.gen_placeholder(wordlist, randint(1,3)), owner=user, author = User.gen_placeholder(wordlist, 2),
-                        price = 0 if (randint(0,2) == 0 ) else randint(0,8888)/100.0)
+                        price = 0 if (randint(0,2) == 0 ) else randint(0,8888)/100.0, condition = randint(1,5))
                 db.session.add(book)
         
         db.session.commit()
@@ -103,7 +106,7 @@ class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(128), unique=False, index=True)
     author = db.Column(db.String(128), unique=False, index=True)
-    condition = db.Column(db.Enum('OK', 'Good', 'Very Good', 'Excellent', name='book_condition'), default='OK')
+    condition = db.Column(db.Integer, unique=False, index=True)
     price = db.Column(db.Float(precision=2, default=0))
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
