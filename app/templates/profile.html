@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block page_content %}
+
+<div class="jumbotron">
+  <div class="container">
+        <h2>{{ user.username }}<small class="text-muted"> ~ Last online {{ moment(user.last_online).fromNow() }}. </small></h2>
+        <p>Using TextX since {{ moment(user.user_since).format('MMM Do YYYY') }}.</p>
+        <p>
+                {% if user.ratings_count != 0 %}
+                User rating: {{ user.rating }}/5
+                {% else %}
+                {{ user.username }} has not been rated yet.
+                {% endif %}
+        </p>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+          <h2>{{ user.username }}'s Books</h2>
+
+  </div>
+</div>
+
+
+
+
+{% endblock %}
