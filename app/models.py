@@ -74,9 +74,11 @@ class User(db.Model, UserMixin):
                     rating = tmp/1000.0, ratings_count = 0 if (tmp == 0) else randint(1, 88) )
             db.session.add(user)
 
-            ## Gen fake books with random names, titles, prices, & conditions
+            ## Gen fake books with random names, 
+            ## titles, prices, ISBNs, & conditions
             for j in range( randint(2, 8) ):
-                book = Book(title = User.gen_placeholder(wordlist, randint(1,3)), owner=user, author = User.gen_placeholder(wordlist, 2),
+                book = Book(title = User.gen_placeholder(wordlist, randint(1,3)), owner=user, 
+                        author = User.gen_placeholder(wordlist, 2), isbn = randint(0,9999999999999),
                         price = 0 if (randint(0,2) == 0 ) else randint(0,8888)/100.0, condition = randint(1,5))
                 db.session.add(book)
         
@@ -108,6 +110,7 @@ class Book(db.Model):
     author = db.Column(db.String(128), unique=False, index=True)
     condition = db.Column(db.Integer, unique=False, index=True)
     price = db.Column(db.Float(precision=2, default=0))
+    isbn = db.Column(db.Integer, unique=False)
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 
