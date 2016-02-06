@@ -40,5 +40,7 @@ def process_login(form):
         login_user(user, True)
         user.last_online = datetime.utcnow()
         flash('Welcome back, ' + user.username + '.', 'success')
+        return True
 
     flash('Invalid email + password combination.', 'danger')
+    return False
