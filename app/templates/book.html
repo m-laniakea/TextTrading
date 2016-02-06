@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block page_content %}
+
+<h2>"{{ book.title }}"</h2>
+<div class="container">
+  <div class="list-group">
+                  <button type="button" class="list-group-item" }}>Written by: <b>{{ book.author }}</b></button>
+                  <button type="button" class="list-group-item"> Price: <b>
+                          {% if book.price <= 0 %}
+                                  Free
+                          {% else %}
+                          ${{ book.price }}
+                          {% endif %}
+                          </b>
+                  </button>
+                  <button type="button" class="list-group-item" }}>Condition: <b>{{ book.condition }}/5</b></button>
+                  <li type="button" class="list-group-item" }}>ISBN13: <a href="http://www.amazon.com/gp/search?keywords={{ book.isbn }}"><b>{{ book.isbn }}</b></a></li>
+                  <button type="button" class="list-group-item" }}>Owner: <b>{{ owner.username }}</b></button>
+                  <button type="button" class="list-group-item" }}>Owner Rating: <b>{{ owner.rating }}/5</b></button>
+
+  </div>
+  <a type="button" class="btn btn-success" href="/u/{{ owner.username }}">Contact Owner</a>
+</div>
+
+
+
+
+{% endblock %}
