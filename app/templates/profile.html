@@ -4,14 +4,25 @@
 <h2>{{ user.username }}<small class="text-muted"> ~ Last online {{ moment(user.last_online).fromNow() }}. </small></h2>
 <div class="jumbotron">
   <div class="container">
-        <p>Using TextX since {{ moment(user.user_since).format('MMM Do YYYY') }}.</p>
+        <p>TextX member since {{ moment(user.user_since).format('MMM Do YYYY') }}.</p>
         <p>
-                {% if user.ratings_count != 0 %}
-                User rating: {{ user.rating }}/5
-                {% else %}
-                {{ user.username }} has not been rated yet.
-                {% endif %}
+                {% if user.ratings_count > 0 %}
+                User rating: {{ user.rating }}/5.
         </p>
+                    <small class="text-muted">This user has been rated {{ user.ratings_count }} 
+                    {% if user.ratings_count == 1 %}
+                        time.
+                    {% else %}
+                        times.
+                    {% endif %}
+                    </small>
+  
+
+                {% else %}
+        <p> 
+                {{ user.username }} has not been rated yet.
+        </p>
+                {% endif %}
   </div>
 </div>
 
@@ -20,7 +31,18 @@
           {% if books %}
           <div class="list-group">
                   {% for book in books %}
-                  <a type="button" class="list-group-item" href='/b/{{ book.id }}'>{{ book.title }}</a>
+                  <a type="button" class="list-group-item" href='/b/{{ book.id }}'>
+                          "{{ book.title }}" by {{ book.author }}
+                                  {% if book.price <= 0 %}
+                                  <span style="border-radius: 1em; font-size: 0.9em" class="label label-success pull-right">
+                                  Free
+                                  {% else %}
+                                  <span class="badge">
+                                  ${{ book.price }}
+                                  {% endif %}
+                                  </span>
+                                  <span class="badge float-center">Condition: {{ book.condition }}/5</span>
+                  </a>
                   {% endfor %}
 
           {% else %}
