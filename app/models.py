@@ -8,6 +8,7 @@ from . import login_manager
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 import random, os
+from random import randint
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -66,17 +67,20 @@ class User(db.Model, UserMixin):
             db.session.add(user)
 
             for j in range(4):
-                book = Book(title = User.gen_booktitle(wordlist), owner=user)
+                book = Book(title = User.gen_placeholder(wordlist, 3), owner=user, author = User.gen_placeholder(wordlist, 2),
+                        price = 0 if (randint(0,2) == 0 ) else randint(0,8888)/100.0)
                 db.session.add(book)
         
         db.session.commit()
 
-
-    def gen_booktitle(words):
+    @staticmethod
+    def gen_placeholder(words, n):
         title = ""
-
-        for i in range(3): 
-            title += random.choice(words).title() + " "
+        
+        if n > 0:
+            for i in range(n - 1): 
+                title += random.choice(words).title() + " "
+            title += random.choice(words).title() 
 
         return title
 
@@ -92,6 +96,9 @@ class Book(db.Model):
     __tablename__ = 'books'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(128), unique=False, index=True)
+    author = db.Column(db.String(128), unique=False, index=True)
+    condition = db.Column(db.Enum('OK', 'Good', 'Very Good', 'Excellent', name='book_condition'), default='OK')
+    price = db.Column(db.Float(precision=2, default=0))
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 

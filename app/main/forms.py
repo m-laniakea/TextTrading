@@ -4,6 +4,7 @@ from flask.ext.wtf import Form
 from wtforms import StringField, PasswordField, SubmitField, ValidationError 
 from wtforms.validators import Required, Email, Length, EqualTo, Regexp
 from .. models import User
+from . import main
 from datetime import datetime
 
 class LoginForm(Form):
@@ -39,5 +40,5 @@ def process_login(form):
         login_user(user, True)
         user.last_online = datetime.utcnow()
         flash('Welcome back, ' + user.username + '.', 'success')
-        return redirect(url_for('main.index'))
+
     flash('Invalid email + password combination.', 'danger')

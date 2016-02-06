@@ -31,7 +31,8 @@ def index():
     form = LoginForm()
 
     if form.validate_on_submit():
-        process_login(form)
+        if process_login(form):
+            return redirect(url_for('main.profile', username = current_user.username))
     
     return render_template('index.html', current_time=datetime.utcnow(), form=form)
 
