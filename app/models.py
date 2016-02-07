@@ -25,13 +25,14 @@ def load_user(user_id):
 #
 #   get_id()    # Return user identifier 
 ##
-
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, index=True)
     email = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
+
+    # Back-reference to multiple books the user will have
     books = db.relationship("Book", backref="owner", lazy="dynamic")
     user_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_online = db.Column(db.DateTime(), default=datetime.utcnow) 
@@ -50,6 +51,9 @@ class User(db.Model, UserMixin):
         return check_password_hash(self.password_hash, password)
 
     ##
+    #
+    ## POPULATE
+    #
     # Initiate & Populate db with users,
     # randomly generated book titles
     #
@@ -59,6 +63,8 @@ class User(db.Model, UserMixin):
     def populate():
         # Initialize db with models from this file
         db.create_all()
+
+        # Get base directory for cross-system filepaths
         basedir = os.path.abspath(os.path.dirname(__file__))
         wordlist = [l.strip() for l in open(os.path.join(basedir, "dct.txt"))]
 
@@ -84,6 +90,7 @@ class User(db.Model, UserMixin):
         
         db.session.commit()
 
+    # Return 1-n random words as a string
     @staticmethod
     def gen_placeholder(words, n):
         title = ""

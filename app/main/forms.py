@@ -1,41 +1,65 @@
+##
+# Forms file
+# Contains forms and validators
+##
 from flask import flash, redirect, url_for
 from flask.ext.login import login_user
-from flask.ext.wtf import Form
+from flask.ext.wtf import Form, RecaptchaField
 from wtforms import StringField, PasswordField, SubmitField, ValidationError 
 from wtforms.validators import Required, Email, Length, EqualTo, Regexp
 from .. models import User
 from . import main
 from datetime import datetime
 
+
+## 
+# Login form to be displayed on the navbar
+##
 class LoginForm(Form):
     email = StringField('email@domain.com', validators=[Required(), Length(1, 64) ])
     password = PasswordField('password', validators=[Required()])
 
+##
+# Signup form for '/register'
+##
 class SignupForm(Form):
     email = StringField('Email', validators=[Required(), Length(1, 64), Email()])
-    username = StringField('username', validators=[Required(), Length(1,64), Regexp('^[a-zA-Z0-9][\._a-z0-9]*$', 0, 'Your username may start with an upper or lowercase letter. Only lowercase letters, numbers, underscores, and periods may follow.')])
+    username = StringField('username', validators=[Required(), Length(1,64), Regexp('^[a-zA-Z0-9][\._a-z0-9]*$', 0, 
+        'Your username may start with an upper- or lowercase letter or a number. Only lowercase letters, numbers, underscores, and periods may follow.')])
 
     password = PasswordField('Password', validators = [Required(), EqualTo('password_confirmation', message='Your passwords must match.')]) 
     password_confirmation = PasswordField('Confirm Password', validators = [Required()])
 
     submit = SubmitField("Register")
+    
+    # Uncomment to enable ReCaptcha for registration
+    ## captcha = RecaptchaField()
 
+    # Check if email already exists
     def validate_email(self, field):
-        if User.query.filter_by(email=field.data).first():
+        if User.query.filter_by(email=field.data.lower()).first():
             raise ValidationError('Email already in use.')
 
+    # Check if username exists
     def validate_username(self, field):
         if User.query.filter_by(username=field.data).first() or User.query.filter_by(username=field.data.lower()).first():
-            raise ValidationError('Username already taken')
+            raise ValidationError('Username already taken.')
 
+##
+# Collect errors from form fields
+# flash to user
+##
 def flash_errors(form):
     for field, errors in form.errors.items():
         for error in errors:
             flash("%s field: %s" % (getattr(form, field).label.text, error), 'danger')
 
-
+##
+# Check LoginForm data against db
+# Log in user if checks pass
+##
 def process_login(form):
-    user = User.query.filter_by(email=form.email.data).first()
+    user = User.query.filter_by(email=form.email.data.lower()).first()
     if user is not None and user.check_password(form.password.data):
         login_user(user, True)
         user.last_online = datetime.utcnow()

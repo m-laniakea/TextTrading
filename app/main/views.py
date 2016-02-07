@@ -19,6 +19,10 @@ from datetime import datetime
 #       color id's:
 #
 #       warning, success, danger, info
+#
+#
+## form.validate_on_submit() returns True 
+#    if input was successfully validated
 ##
 
 
@@ -32,6 +36,7 @@ def index():
 
     if form.validate_on_submit():
         if process_login(form):
+            # Redirect user to their profile
             return redirect(url_for('main.profile', username = current_user.username))
     
     return render_template('index.html', current_time=datetime.utcnow(), form=form)
@@ -61,13 +66,14 @@ def register():
         return redirect(url_for('main.index'))
 
     if form.validate_on_submit():
-        new_user = User(email=form.email.data, username=form.username.data, set_password = form.password.data)
+        new_user = User(email=form.email.data.lower(), username=form.username.data, set_password = form.password.data)
         db.session.add(new_user)
         db.session.commit()
         login_user(new_user, True)
         flash('Welcome to TextX, ' + new_user.username + '! You\'ve been logged in.', 'success')
         return redirect(url_for('main.index'))
 
+    # Flash form errors for user
     flash_errors(form)
     return render_template('register.html', form=form, disable_user_login=True)
 
@@ -79,10 +85,13 @@ def register():
 def profile(username):
     form = LoginForm()
 
+    if form.validate_on_submit():
+        process_login(form)
+
     user = User.query.filter_by(username=username).first()
     if user:
         books = user.books.all()
-        return render_template('profile.html', user=user, books=books)
+        return render_template('profile.html', form=form, user=user, books=books)
 
     flash("\"" + username + '\" is not a member yet.', 'info')
     abort(404)
@@ -93,10 +102,16 @@ def profile(username):
 ##
 @main.route('/b/<bookid>', methods=['GET', 'POST'])
 def book(bookid):
-    book = Book.query.filter_by(id=bookid).first()
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        process_login(form)
+
+    book = Book.query.get(int(bookid))
+
     if book:
-        owner = User.query.filter_by(id=book.owner_id).first()
-        return render_template('book.html', book=book, owner=owner)
+        owner = User.query.get(book.owner_id)
+        return render_template('book.html', form=form, book=book, owner=owner)
 
     flash("This book does not exist.", "info")
     abort(404)

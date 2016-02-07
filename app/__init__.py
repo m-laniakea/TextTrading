@@ -20,6 +20,7 @@ login_manager.session_protection = 'strong'
 def create_app(name):
     app = Flask(__name__)
     app.config.from_object(cfg[name])
+
     cfg[name].init_app(app)
 
     login_manager.init_app(app)

@@ -12,6 +12,11 @@ class Config:
     SECRET_KEY = '124a95b6f97d7181939acacac2950c4b3b014ef6590d362737696fe2e8b2971211aeec99ee6e678170aabc24f404f6d1e73fab4f06ef88b393f318178e'
     # Automatically commit on db action
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+    
+
+    RECAPTCHA_PUBLIC_KEY = '6LeYIbsSAAAAACRPIllxA7wvXjIE411PfdB2gt2J'
+    RECAPTCHA_PRIVATE_KEY = '6LeYIbsSAAAAAJezaIq3Ft_hSTo0YtyeFG-JgRtu'
+
 
     @staticmethod
     def init_app(app):
