@@ -5,22 +5,23 @@
 from flask import flash, redirect, url_for
 from flask.ext.login import login_user
 from flask.ext.wtf import Form, RecaptchaField
-from wtforms import StringField, PasswordField, SubmitField, ValidationError 
-from wtforms.validators import Required, Email, Length, EqualTo, Regexp
+from wtforms import StringField, PasswordField, SubmitField, ValidationError, IntegerField, DecimalField
+from wtforms.validators import Required, Email, Length, EqualTo, Regexp, NumberRange
 from .. models import User
 from . import main
 from datetime import datetime
 
 
 ## 
-# Login form to be displayed on the navbar
+# LoginForm to be displayed on the navbar
 ##
 class LoginForm(Form):
     email = StringField('email@domain.com', validators=[Required(), Length(1, 64) ])
     password = PasswordField('password', validators=[Required()])
 
+
 ##
-# Signup form for '/register'
+# SignupForm for '/register'
 ##
 class SignupForm(Form):
     email = StringField('Email', validators=[Required(), Length(1, 64), Email()])
@@ -46,6 +47,18 @@ class SignupForm(Form):
             raise ValidationError('Username already taken.')
 
 ##
+# BookForm form for '/add' + editing books
+##
+class BookForm(Form):
+    title = StringField('Title', validators=[Required(), Length(1,128)])
+    author = StringField('Author', validators=[Required(), Length(1,128)])
+    condition = IntegerField('Condition', validators=[Required(), NumberRange(1,5)])
+    isbn = IntegerField('ISBN13', validators=[Required(), NumberRange(0,9999999999999)])
+    price = DecimalField('Price', validators=[Required(), NumberRange(0, 8888.8)])
+
+    submit = SubmitField("Save")
+
+##
 # Collect errors from form fields
 # flash to user
 ##
@@ -53,6 +66,7 @@ def flash_errors(form):
     for field, errors in form.errors.items():
         for error in errors:
             flash("%s field: %s" % (getattr(form, field).label.text, error), 'danger')
+
 
 ##
 # Check LoginForm data against db

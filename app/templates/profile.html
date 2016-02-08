@@ -28,8 +28,11 @@
 
 <h2>{{ user.username }}'s Books</h2>
   <div class="container">
-          {% if books %}
           <div class="list-group">
+                  {% if current_user == user %}
+                  <a class="list-group-item list-group-item-success" href="/add"><span class="glyphicon glyphicon-plus"></span><b>Add Book</b></a>
+                  {% endif %}
+                  {% if books %}
                   {% for book in books %}
                   <a type="button" class="list-group-item" href='/b/{{ book.id }}'>
                           "{{ book.title }}" by {{ book.author }}
@@ -46,7 +49,7 @@
                   {% endfor %}
 
           {% else %}
-          <h4> No books yet :( </h4>
+          <a type="button" class="list-group-item list-group-item-info"><b>No books yet :(</b></a>
           {% endif %}
 
   </div>
