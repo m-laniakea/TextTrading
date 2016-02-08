@@ -7,7 +7,7 @@ from flask.ext.login import login_user, logout_user, login_required, current_use
 from .. import db
 from ..models import User, Book
 from . import main
-from . forms import LoginForm, SignupForm, flash_errors, process_login
+from . forms import LoginForm, SignupForm, BookForm, flash_errors, process_login
 from datetime import datetime
 
 ##
@@ -142,3 +142,31 @@ def delete_book(bookid):
 
     flash("This book does not exist.", "info")
     abort(404)
+
+
+##
+# Book editing route
+##
+@main.route('/add', methods=['GET', 'POST'])
+def edit_book():
+
+    form = BookForm()
+
+    if current_user.is_anonymous:
+        flash("You must be logged-in to add books.", "info")
+        return redirect(url_for('main.index'))
+
+    if form.validate_on_submit():
+        b = Book(title=form.title.data, author=form.author.data, condition=form.condition.data,
+                isbn=form.isbn.data, price=form.price.data, owner_id=current_user.id)
+
+        db.session.add(b)
+        db.session.commit()
+        flash("Book added successfully", "success")
+        return redirect(url_for('main.profile', username=current_user.username))
+
+    flash_errors(form)
+    return render_template("bookform.html", form=form)
+
+
+
