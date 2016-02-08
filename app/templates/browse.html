@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block page_content %}
+
+  <div class="container">
+          <h2>All Books</h2>
+          <div class="list-group">
+            {% if allbooks %}
+                  {% for book in allbooks %}
+                  <a type="button" class="list-group-item" href='/b/{{ book.id }}'>
+                          "{{ book.title }}" by {{ book.author }}
+                                  {% if book.price <= 0 %}
+                                  <span style="border-radius: 1em; font-size: 0.9em" class="label label-success pull-right">
+                                  Free
+                                  {% else %}
+                                  <span class="badge">
+                                  ${{ book.price }}
+                                  {% endif %}
+                                  </span>
+                                  <span class="badge float-center">Condition: {{ book.condition }}/5</span>
+                  </a>
+                  {% endfor %}
+
+          {% else %}
+          <a type="button" class="list-group-item list-group-item-info"><b>No books yet :(</b></a>
+          {% endif %}
+
+  </div>
+
+
+
+
+{% endblock %}

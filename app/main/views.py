@@ -71,7 +71,7 @@ def register():
         db.session.commit()
         login_user(new_user, True)
         flash('Welcome to TextX, ' + new_user.username + '! You\'ve been logged in.', 'success')
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.profile', username=current_user.username))
 
     # Flash form errors for user
     flash_errors(form)
@@ -167,6 +167,22 @@ def edit_book():
 
     flash_errors(form)
     return render_template("bookform.html", form=form)
+
+
+
+##
+# Book browsing route
+##
+@main.route('/books', methods=['GET','POST'])
+def books():
+    allbooks = Book.query.all()
+
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        process_login(form)
+
+    return render_template('browse.html', form=form, allbooks=allbooks)
 
 
 
