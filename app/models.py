@@ -68,7 +68,7 @@ class User(db.Model, UserMixin):
         basedir = os.path.abspath(os.path.dirname(__file__))
         wordlist = [l.strip() for l in open(os.path.join(basedir, "dct.txt"))]
 
-        emails = ["Bruce@uw.edu", "Cate@uw.edu", "m-laniakea@uw.edu", "erick@uw.edu", "BitFracture@uw.edu", "Ruby@uw.edu"]
+        emails = ["bruce@uw.edu", "cate@uw.edu", "m-laniakea@uw.edu", "erick@uw.edu", "bitfracture@uw.edu", "ruby@uw.edu"]
         unames = ["Bruce", "Cate", "m-laniakea", "erickgnoUW", "BitFracture", "Ruby"]
 
         ## Populate db with user in the two lists, assign random rating

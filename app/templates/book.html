@@ -28,6 +28,8 @@
   </div>
   {% if current_user.is_anonymous %}
   <a type="button" class="btn btn-warning" href="#">You must be logged in to contact the Owner</a>
+  {% elif current_user == owner %}
+  <a type="button" class="btn btn-danger" href="/d/{{ book.id }}">Delete This Book</a>
   {% else %}
   <a type="button" class="btn btn-success" href="/u/{{ owner.username }}">Contact Owner</a>
   {% endif %}

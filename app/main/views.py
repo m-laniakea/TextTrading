@@ -115,3 +115,30 @@ def book(bookid):
 
     flash("This book does not exist.", "info")
     abort(404)
+
+
+##
+# Book deletion route
+##
+@main.route('/d/<bookid>')
+def delete_book(bookid):
+    
+    if current_user.is_anonymous:
+        flash("You must be logged-in to delete books.", "info")
+        return redirect(url_for('main.index'))
+
+    book = Book.query.get(int(bookid))
+
+    if book:
+        if book.owner_id == current_user.id:
+            db.session.delete(book)
+            db.session.commit()
+            flash('\"' + book.title + '\" successfully deleted.', "success")
+        
+        else:
+            flash("Only the owner may delete their book.", "warning")
+
+        return redirect(url_for('main.profile', username = current_user.username))
+
+    flash("This book does not exist.", "info")
+    abort(404)
