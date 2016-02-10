@@ -175,7 +175,7 @@ def edit_book():
 ##
 @main.route('/books', methods=['GET','POST'])
 def books():
-    allbooks = Book.query.all()
+    allbooks = Book.query.order_by("id desc")
 
     form = LoginForm()
 
