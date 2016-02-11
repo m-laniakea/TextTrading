@@ -32,7 +32,7 @@
                         {% if current_user.is_anonymous %}
                             <form action="" method="post" name="login" class="form-group">
                                 {{ form.hidden_tag() }}
-                                {{ form.email(class="form-control", placeholder="email@domain.com") }}
+                                {{ form.login(class="form-control", placeholder="email or username") }}
                                 {{ form.password(class="form-control", placeholder="password") }}
                                 <button type="submit" class="btn btn-success">Log in</button>
                                 <a type="button" class="btn btn-info" href='/register'>Register</a>

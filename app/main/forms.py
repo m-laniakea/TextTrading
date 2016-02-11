@@ -16,7 +16,7 @@ from datetime import datetime
 # LoginForm to be displayed on the navbar
 ##
 class LoginForm(Form):
-    email = StringField('email@domain.com', validators=[Required(), Length(1, 64) ])
+    login = StringField('email or username', validators=[Required(), Length(1, 64) ])
     password = PasswordField('password', validators=[Required()])
 
 
@@ -90,7 +90,12 @@ def flash_errors(form):
 # Log in user if checks pass
 ##
 def process_login(form):
-    user = User.query.filter_by(email=form.email.data.lower()).first()
+    user = User.query.filter_by(email=form.login.data.lower()).first()
+
+    # Check if user entered username instead
+    if user is None:
+        user = User.query.filter_by(username=form.login.data).first()
+
     if user is not None and user.check_password(form.password.data):
         login_user(user, True)
         user.last_online = datetime.utcnow()
