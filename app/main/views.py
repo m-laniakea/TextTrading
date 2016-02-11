@@ -7,7 +7,7 @@ from flask.ext.login import login_user, logout_user, login_required, current_use
 from .. import db
 from ..models import User, Book, Conversation, Message
 from . import main
-from . forms import LoginForm, SignupForm, BookForm, flash_errors, process_login
+from . forms import LoginForm, SignupForm, BookForm, MessageForm, flash_errors, process_login
 from datetime import datetime
 
 ##
@@ -193,13 +193,25 @@ def books():
 @main.route('/c/<cid>', methods=['GET', 'POST'])
 def conversation(cid):
 
-    form = LoginForm()
+    form = MessageForm()
+
 
     if current_user.is_anonymous:
         flash('You must be logged in to view your conversations.', 'info')
         return redirect(url_for('main.index'))
 
     conversation = Conversation.query.get(cid)
+
+    if not conversation:
+        flash("This conversation never took place", 'info')
+        abort(404)
+
+    # Send message
+    if form.validate_on_submit():
+        m = Message(contents=form.text.data, sender=current_user.username)
+        conversation.messages.append(m)
+        db.session.commit()
+
 
     for p in conversation.participants:
         if current_user == p:
