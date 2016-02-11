@@ -54,9 +54,26 @@ class BookForm(Form):
     author = StringField('Author', validators=[Required(), Length(1,128)])
     condition = IntegerField('Condition', validators=[Required(), NumberRange(1,5)])
     isbn = IntegerField('ISBN13', validators=[Required(), NumberRange(0,9999999999999)])
-    price = DecimalField('Price', validators=[Required(), NumberRange(0, 8888.8)])
+    price = DecimalField('Price', validators=[NumberRange(0, 8888.8)])
 
     submit = SubmitField("Save")
+
+
+##
+# MessageForm for conversations
+##
+class MessageForm(Form):
+    text = StringField('Text', validators=[Required(), Length(2, 256)])
+    submit = SubmitField("Send")
+
+
+##
+# Conversation initiator for books page
+##
+class ConvInitForm(Form):
+    submit = SubmitField("Contact Owner")
+
+
 
 ##
 # Collect errors from form fields
