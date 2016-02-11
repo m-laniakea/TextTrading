@@ -5,7 +5,7 @@
 from flask import render_template, redirect, request, url_for, session, current_app, flash, abort
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from .. import db
-from ..models import User, Book
+from ..models import User, Book, Conversation, Message
 from . import main
 from . forms import LoginForm, SignupForm, BookForm, flash_errors, process_login
 from datetime import datetime
@@ -91,7 +91,8 @@ def profile(username):
     user = User.query.filter_by(username=username).first()
     if user:
         books = user.books.all()
-        return render_template('profile.html', form=form, user=user, books=books)
+        conversations = user.conversations
+        return render_template('profile.html', form=form, user=user, books=books, conversations=conversations)
 
     flash("\"" + username + '\" is not a member yet.', 'info')
     abort(404)

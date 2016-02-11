@@ -152,7 +152,7 @@ class Conversation(db.Model):
     messages = db.relationship("Message", backref="conversation", lazy="dynamic")
 
     def __repr__(self):
-        return 'Topic \"%s\" with %s & %s' % (self.subject, self.participants[0], self.participants[1))
+        return 'Topic \"%s\" with %s & %s' % (self.subject, self.participants[0], self.participants[1])
 
 ##
 # Messages have:
