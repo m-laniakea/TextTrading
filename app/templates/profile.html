@@ -28,12 +28,15 @@
 {% if current_user == user %}
 <h2>Your Conversations</h2>
   <div class="container">
+    <div class="list-group">
+
         {% for c in conversations %}
         <a type="button" class="list-group-item" href='/c/{{ c.id }}'>
                 <b>{{ c.participants[1].username if c.participants[0] == current_user else c.participants[0].username }}</b> : "{{ c.subject }}"
         </a>
         {% endfor %}
 
+    </div>
   </div>
 {% endif %}
 

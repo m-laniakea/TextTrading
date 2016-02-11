@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block page_content %}
+
+
+
+
+
+<h2>Re: "{{ conversation.subject }}"</h2>
+<h4>With: {% for p in conversation.participants %}
+                {% if current_user != p %}
+                {{ p.username + " " }} 
+                {% endif %}
+          {% endfor %}
+</h4>
+<div class="container">
+  <div class="list-group">
+          {% for i in range(messages.count()) %}
+          <li class="list-group-item"><b>{{ messages[-i].sender }}</b>: {{ messages[-i].contents }}<span class="badge">{{ moment(messages[-i].send_time).fromNow() }}</span></li>
+          {% endfor %}
+  </div>
+</div>
+
+{% endblock %}
