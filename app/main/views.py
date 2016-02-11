@@ -147,6 +147,7 @@ def delete_book(bookid):
 
 ##
 # Book editing route
+# (Currently only for adding)
 ##
 @main.route('/add', methods=['GET', 'POST'])
 def edit_book():
@@ -186,4 +187,26 @@ def books():
     return render_template('browse.html', form=form, allbooks=allbooks)
 
 
+##
+# Conversation route
+##
+@main.route('/c/<cid>', methods=['GET', 'POST'])
+def conversation(cid):
 
+    form = LoginForm()
+
+    if current_user.is_anonymous:
+        flash('You must be logged in to view your conversations.', 'info')
+        return redirect(url_for('main.index'))
+
+    conversation = Conversation.query.get(cid)
+
+    for p in conversation.participants:
+        if current_user == p:
+            messages = conversation.messages
+            return render_template("conversation.html", conversation=conversation, messages=messages, form=form)
+
+    flash('Only conversation participants may view this page.', 'warning')
+    # Redirect to previous  path
+    return redirect(request.referrer)
+    
