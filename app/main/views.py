@@ -134,29 +134,53 @@ def book(bookid):
 
 
 ##
-# Book deletion route
+# Deletion route
 ##
-@main.route('/d/<bookid>')
-def delete_book(bookid):
+@main.route('/d/<t>/<iid>')
+def delete_book(t, iid):
     
     if current_user.is_anonymous:
-        flash("You must be logged-in to delete books.", "info")
+        flash("You must be logged-in to delete items.", "info")
         return redirect(url_for('main.index'))
 
-    book = Book.query.get(int(bookid))
+    # If the item to be deleted is a conversation
+    if t == "c":
+        c = Conversation.query.get(int(iid))
+        if c:
+            # if requestor is not a participant
+            if not current_user in c.participants:
+                flash("Only conversation participants may delete conversations.", 'warning')
 
-    if book:
-        if book.owner_id == current_user.id:
-            db.session.delete(book)
-            db.session.commit()
-            flash('\"' + book.title + '\" successfully deleted.', "success")
+
+            else: 
+                flash('Conversation regarding \"' + c.subject + '\" successfully removed', 'success')
+                for m in c.messages:
+                    db.session.delete(m)
+
+                db.session.delete(c)
+
+                db.session.commit()
+            return redirect(url_for('main.profile', username = current_user.username))
+
+
+
+    # If deletion type book
+    elif t == "b":
+
+        book = Book.query.get(int(iid))
+
+        if book:
+            if book.owner_id == current_user.id:
+                db.session.delete(book)
+                db.session.commit()
+                flash('\"' + book.title + '\" successfully deleted.', "success")
         
-        else:
-            flash("Only the owner may delete their book.", "warning")
+            else:
+                flash("Only the owner may delete their book.", "warning")
 
         return redirect(url_for('main.profile', username = current_user.username))
 
-    flash("This book does not exist.", "info")
+    flash("This item does not exist.", "info")
     abort(404)
 
 
@@ -226,6 +250,8 @@ def conversation(cid):
         m = Message(contents=form.text.data, sender=current_user.username)
         conversation.messages.append(m)
         db.session.commit()
+        # Blank field for next submission
+        form.text.data =""
 
 
     for p in conversation.participants:

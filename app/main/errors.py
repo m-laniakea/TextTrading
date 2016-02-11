@@ -31,7 +31,7 @@ def error_internal(e):
 
     form = LoginForm()
 
-    if form.validate_on_submite():
+    if form.validate_on_submit():
         process_login(form)
 
     return render_template('500.html', form=form), 500
