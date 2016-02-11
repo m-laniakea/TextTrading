@@ -83,7 +83,7 @@ class User(db.Model, UserMixin):
         wordlist = [l.strip() for l in open(os.path.join(basedir, "dct.txt"))]
 
         emails = ["bruce@uw.edu", "cate@uw.edu", "m-laniakea@uw.edu", "erick@uw.edu", "bitfracture@uw.edu", "ruby@uw.edu"]
-        unames = ["Bruce", "Cate", "m-laniakea", "erickgnoUW", "BitFracture", "Ruby"]
+        unames = ["Bruce", "Cate", "m-laniakea", "erickgnouw", "Bitfracture", "Ruby"]
 
         ## Populate db with user in the two lists, assign random rating
         for i in range(len(emails)):
