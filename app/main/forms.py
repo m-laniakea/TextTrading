@@ -67,6 +67,13 @@ class MessageForm(Form):
     submit = SubmitField("Send")
 
 
+##
+# Conversation initiator for books page
+##
+class ConvInitForm(Form):
+    submit = SubmitField("Contact Owner")
+
+
 
 ##
 # Collect errors from form fields

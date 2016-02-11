@@ -7,7 +7,7 @@ from flask.ext.login import login_user, logout_user, login_required, current_use
 from .. import db
 from ..models import User, Book, Conversation, Message
 from . import main
-from . forms import LoginForm, SignupForm, BookForm, MessageForm, flash_errors, process_login
+from . forms import LoginForm, SignupForm, BookForm, MessageForm, ConvInitForm, flash_errors, process_login
 from datetime import datetime
 
 ##
@@ -104,15 +104,30 @@ def profile(username):
 @main.route('/b/<bookid>', methods=['GET', 'POST'])
 def book(bookid):
     form = LoginForm()
+    form2 = ConvInitForm()
 
     if form.validate_on_submit():
         process_login(form)
 
     book = Book.query.get(int(bookid))
 
+    if form2.validate_on_submit():
+        c = Conversation(subject=book.title)
+        c.participants.append(current_user)
+        c.participants.append(book.owner)
+        m = Message(contents = "I'm interested in your book \"" + book.title + "\".", sender=current_user.username, conversation=c)
+
+        db.session.add(c)
+        db.session.add(m)
+        db.session.commit()
+        
+        flash('Trade request sent to ' + book.owner.username, 'success')
+        return redirect(url_for('main.profile', username = current_user.username))
+
+
     if book:
         owner = User.query.get(book.owner_id)
-        return render_template('book.html', form=form, book=book, owner=owner)
+        return render_template('book.html', form=form, form2=form2, book=book, owner=owner)
 
     flash("This book does not exist.", "info")
     abort(404)
