@@ -7,7 +7,7 @@ from flask.ext.login import login_user
 from flask.ext.wtf import Form, RecaptchaField
 from wtforms import StringField, PasswordField, SubmitField, ValidationError, IntegerField, DecimalField
 from wtforms.validators import Required, Email, Length, EqualTo, Regexp, NumberRange
-from .. models import User
+from .. models import db, User
 from . import main
 from datetime import datetime
 
@@ -54,10 +54,9 @@ class BookForm(Form):
     author = StringField('Author', validators=[Required(), Length(1,128)])
     condition = IntegerField('Condition', validators=[Required(), NumberRange(1,5)])
     isbn = IntegerField('ISBN13', validators=[Required(), NumberRange(0,9999999999999)])
-    price = DecimalField('Price', validators=[NumberRange(0, 8888.8)])
+    price = DecimalField('Price', validators=[NumberRange(0,8888.89)] )
 
     submit = SubmitField("Save")
-
 
 ##
 # MessageForm for conversations
@@ -98,7 +97,8 @@ def process_login(form):
 
     if user is not None and user.check_password(form.password.data):
         login_user(user, True)
-        user.last_online = datetime.utcnow()
+        user.is_online = True
+        db.session.commit()
         flash('Welcome back, ' + user.username + '.', 'success')
         return True
 

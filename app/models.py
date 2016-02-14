@@ -36,9 +36,10 @@ def load_user(user_id):
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), unique=True, index=True)
+    username = db.Column(db.String(32), unique=True, index=True)
     email = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
+    is_online = db.Column(db.Boolean, default=False)
 
     # Back-reference to multiple books the user will have
     books = db.relationship("Book", backref="owner", lazy="dynamic")
@@ -150,6 +151,7 @@ class Conversation(db.Model):
     subject = db.Column(db.String(128))
     start_time = db.Column(db.DateTime(), default=datetime.utcnow)
     messages = db.relationship("Message", backref="conversation", lazy="dynamic")
+    book_id = db.Column(db.Integer)
 
     def __repr__(self):
         return 'Topic \"%s\" with %s & %s' % (self.subject, self.participants[0], self.participants[1])
