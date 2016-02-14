@@ -17,24 +17,34 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="/">TextX</a>
+            {% if current_user.is_anonymous %}
+            <a class="navbar-brand" href="/register">Register</a>
+            {% else %}
+            <a class="navbar-brand" href="/u/{{ current_user.username }}">Profile</a>
+            {% endif %}
+            
+            <a class="navbar-brand" href="/books">Books</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-                <div class="navbar-form navbar-right">
+                {% if not disable_user_login %}
+                        <div class="navbar-form navbar-right">
 
-                {% if current_user.is_anonymous %}
-                <form action="" method="post" name="login" class="form-group">
-                        {{ form.hidden_tag() }}
-                        {{ form.email(class="form-control", placeholder="email@domain.com") }}
-                        {{ form.password(class="form-control", placeholder="password") }}
-                        <button type="submit" class="btn btn-success">Log in</button>
-                </form>
+                        {% if current_user.is_anonymous %}
+                            <form action="" method="post" name="login" class="form-group">
+                                {{ form.hidden_tag() }}
+                                {{ form.login(class="form-control", placeholder="email or username") }}
+                                {{ form.password(class="form-control", placeholder="password") }}
+                                <button type="submit" class="btn btn-success">Log in</button>
+                                <a type="button" class="btn btn-info" href='/register'>Register</a>
+                            </form>
 
-                {% else %}
-                <div class="form-group"><h4>Signed in as: {{ current_user.username }}    </h4></div>
-                <a class="btn btn-info" role="button" href="/logout">Log out</a>
+                        {% else %}
+                        <div class="form-group"><h4>Signed in as: <a class="btn-link" href="/u/{{ current_user.username }}">{{ current_user.username }}</a></h4></div>
+                                <a class="btn btn-info" role="button" href="/logout">Log out</a>
+                                </div>
+                        {% endif %}
+
                 {% endif %}
-               
-                </div>
                 
                 
         </div>
