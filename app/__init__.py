@@ -1,5 +1,7 @@
-## App Initializer
-#  Prepare for launch
+##
+# App Initializer
+# Prepare for launch
+##
 
 from flask import Flask 
 from flask.ext.login import LoginManager
@@ -18,6 +20,7 @@ login_manager.session_protection = 'strong'
 def create_app(name):
     app = Flask(__name__)
     app.config.from_object(cfg[name])
+
     cfg[name].init_app(app)
 
     login_manager.init_app(app)
@@ -25,6 +28,9 @@ def create_app(name):
     bootstrap.init_app(app)
     moment.init_app(app)
 
+    ##
+    # Prepare blueprint for use in main/__init__.py
+    ##
     from .main import main as template
     app.register_blueprint(template)
 
