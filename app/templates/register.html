@@ -12,7 +12,7 @@
           {{ form.hidden_tag() }}
 
             {{ form.email(class="form-control", placeholder="email@domain.com") }}
-            {{ form.username(class="form-control", placeholder="username") }}
+            {{ form.username(class="form-control", placeholder="username", size=30, maxlength=32) }}
             {{ form.password(class="form-control", placeholder="password") }}
             {{ form.password_confirmation(class="form-control", placeholder="Confirm password") }}
             {{ form.captcha }}

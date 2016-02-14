@@ -5,10 +5,10 @@
 
 
 
-<h2>Re: "{{ conversation.subject }}"</h2>
+<h2 class="text-info">Re: <a href='/b/{{conversation.book_id}}'>"{{ conversation.subject }}"</a></h2>
 <h4>With: {% for p in conversation.participants %}
                 {% if current_user != p %}
-                {{ p.username + " " }} 
+                <a href='/u/{{ p.username }}' class="text-success">{{ p.username + " " }}</a>
                 {% endif %}
           {% endfor %}
 

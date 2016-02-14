@@ -49,8 +49,9 @@ def index():
 @login_required
 def logout():
     current_user.last_online = datetime.utcnow()
+    current_user.is_online = False
+    db.session.commit()
     logout_user()
-    user = None
     flash('Logout successful', 'success')
     return redirect(url_for('main.index')) 
 
@@ -112,7 +113,7 @@ def book(bookid):
     book = Book.query.get(int(bookid))
 
     if form2.validate_on_submit():
-        c = Conversation(subject=book.title)
+        c = Conversation(subject=book.title, book_id=book.id)
         c.participants.append(current_user)
         c.participants.append(book.owner)
         m = Message(contents = "I'm interested in your book \"" + book.title + "\".", sender=current_user.username, conversation=c)
@@ -122,7 +123,7 @@ def book(bookid):
         db.session.commit()
         
         flash('Trade request sent to ' + book.owner.username, 'success')
-        return redirect(url_for('main.profile', username = current_user.username))
+        return redirect(url_for('main.conversation', cid = c.id))
 
 
     if book:
@@ -196,6 +197,7 @@ def edit_book():
     if current_user.is_anonymous:
         flash("You must be logged-in to add books.", "info")
         return redirect(url_for('main.index'))
+
 
     if form.validate_on_submit():
         b = Book(title=form.title.data, author=form.author.data, condition=form.condition.data,
