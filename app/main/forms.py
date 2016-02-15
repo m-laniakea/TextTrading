@@ -34,7 +34,7 @@ class SignupForm(Form):
     submit = SubmitField("Register")
     
     # Uncomment to enable ReCaptcha for registration
-    ## captcha = RecaptchaField()
+    #captcha = RecaptchaField()
 
     # Check if email already exists
     def validate_email(self, field):

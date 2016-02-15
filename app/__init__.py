@@ -25,6 +25,21 @@ def create_app(name):
 
     login_manager.init_app(app)
     db.init_app(app)
+
+    ##
+    # Initialize and populate db 
+    ##
+    with app.app_context():
+        db.create_all()
+
+        from models import User, Book
+
+        try:
+            User.populate()
+        except:
+            print('Database: \033[93mAlready Populated.\033[0m')
+
+
     bootstrap.init_app(app)
     moment.init_app(app)
 
