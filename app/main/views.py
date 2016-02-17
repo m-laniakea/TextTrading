@@ -222,16 +222,19 @@ def edit_book():
 @main.route('/books', methods=['GET','POST'])
 def books():
 
-    if request.method == 'POST':
-        return search();
+    form = LoginForm()       
+    s_form = ConvInitForm()
+        
+    if form.validate_on_submit():
+        process_login(form)
+        return redirect('/books')
+
+    if s_form.validate_on_submit():
+        return search()
     else:
         allbooks = Book.query.order_by("id desc")
-        form = LoginForm()       
-        
-        if form.validate_on_submit():
-            process_login(form)
-        
-        return render_template('browse.html', form=form, allbooks=allbooks, searchState="All Books")
+      
+    return render_template('browse.html', form=form, s_form=s_form, allbooks=allbooks, searchState="All Books")
 
 
 ##
@@ -275,16 +278,22 @@ def conversation(cid):
 # Searches database with user given search parameters. 
 ##
 def search():
+    form = LoginForm()
+    s_form = ConvInitForm()
+    
+    if form.validate_on_submit():
+        process_login(form)
+
     search = request.form['search'];
     searchState = "All Books"
     if len(search) > 0:
         #Seaches if title contains the search parameter and then searches isbn 
         allbooks = Book.query.filter(Book.title.contains(search) | Book.isbn.contains(search) | Book.author.contains(search));
-        searchState = "Results for " + search;
+        searchState = 'Results for \"'+ search + '\"';
     else:
         allbooks = Book.query.order_by("id desc")
 
-    return render_template('browse.html', form="", allbooks=allbooks, searchState=searchState);
+    return render_template('browse.html', form=form, s_form=s_form, allbooks=allbooks, searchState=searchState);
     
 
 

@@ -39,7 +39,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(32), unique=True, index=True)
     email = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
-    is_online = db.Column(db.Boolean, default=False)
+    is_online = db.Column(db.Boolean, default=True)
 
     # Back-reference to multiple books the user will have
     books = db.relationship("Book", backref="owner", lazy="dynamic")
