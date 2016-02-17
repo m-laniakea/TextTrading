@@ -9,6 +9,7 @@ from ..models import User, Book, Conversation, Message
 from . import main
 from . forms import LoginForm, SignupForm, BookForm, MessageForm, ConvInitForm, flash_errors, process_login
 from datetime import datetime
+from sqlalchemy import or_
 
 ##
 #
@@ -134,6 +135,9 @@ def book(bookid):
     abort(404)
 
 
+
+
+
 ##
 # Deletion route
 ##
@@ -218,14 +222,17 @@ def edit_book():
 ##
 @main.route('/books', methods=['GET','POST'])
 def books():
-    allbooks = Book.query.order_by("id desc")
 
-    form = LoginForm()
-
-    if form.validate_on_submit():
-        process_login(form)
-
-    return render_template('browse.html', form=form, allbooks=allbooks)
+    if request.method == 'POST':
+        return search();
+    else:
+        allbooks = Book.query.order_by("id desc")
+        form = LoginForm()       
+        
+        if form.validate_on_submit():
+            process_login(form)
+        
+        return render_template('browse.html', form=form, allbooks=allbooks)
 
 
 ##
@@ -258,10 +265,32 @@ def conversation(cid):
 
     for p in conversation.participants:
         if current_user == p:
-            messages = conversation.messages
             return render_template("conversation.html", conversation=conversation, messages=messages, form=form)
 
     flash('Only conversation participants may view this page.', 'warning')
     # Redirect to previous  path
     return redirect(request.referrer)
+
+##
+# Searches database with user given search parameters. 
+##
+def search():
+    search = request.form['search'];
+    if len(request.form['search']) > 0:
+        #Seaches if title contains the search parameter and then searches isbn 
+        allbooks = Book.query.filter(Book.title.contains(search) | Book.isbn.contains(search) | Book.author.contains(search));
+
+    else:
+        allbooks = Book.query.order_by("id desc")
+
+    return render_template('browse.html', form="", allbooks=allbooks);
     
+
+
+
+
+
+
+
+
+
