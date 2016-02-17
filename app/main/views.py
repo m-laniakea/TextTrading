@@ -9,7 +9,6 @@ from ..models import User, Book, Conversation, Message
 from . import main
 from . forms import LoginForm, SignupForm, BookForm, MessageForm, ConvInitForm, flash_errors, process_login
 from datetime import datetime
-from sqlalchemy import or_
 
 ##
 #
@@ -265,6 +264,7 @@ def conversation(cid):
 
     for p in conversation.participants:
         if current_user == p:
+            messages = conversation.messages
             return render_template("conversation.html", conversation=conversation, messages=messages, form=form)
 
     flash('Only conversation participants may view this page.', 'warning')
