@@ -231,7 +231,7 @@ def books():
         if form.validate_on_submit():
             process_login(form)
         
-        return render_template('browse.html', form=form, allbooks=allbooks)
+        return render_template('browse.html', form=form, allbooks=allbooks, searchState="All Books")
 
 
 ##
@@ -276,14 +276,15 @@ def conversation(cid):
 ##
 def search():
     search = request.form['search'];
-    if len(request.form['search']) > 0:
+    searchState = "All Books"
+    if len(search) > 0:
         #Seaches if title contains the search parameter and then searches isbn 
         allbooks = Book.query.filter(Book.title.contains(search) | Book.isbn.contains(search) | Book.author.contains(search));
-
+        searchState = "Results for " + search;
     else:
         allbooks = Book.query.order_by("id desc")
 
-    return render_template('browse.html', form="", allbooks=allbooks);
+    return render_template('browse.html', form="", allbooks=allbooks, searchState=searchState);
     
 
 
