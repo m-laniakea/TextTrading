@@ -17,12 +17,8 @@
                   <li type="button" class="list-group-item" }}>ISBN13: <a href="http://www.amazon.com/gp/search?keywords={{ book.isbn }}"><b>{{ book.isbn }}</b></a></li>
                   <li type="button" class="list-group-item" }}>Owner: <a href="/u/{{ owner.username }}"><b>{{ owner.username }}</b></a></li>
 
-                  <button type="button" class="list-group-item" }}>Owner Rating: 
-                          <b>{% if owner.ratings_count == 0 %}Not yet rated.
-                             {% else %}
-                             {{ owner.rating }}/5
-                             {% endif %}
-                          </b>
+                  <button type="button" class="list-group-item" }}>Owner Rating:                 
+                          <span class="label label-{{ owner.rating_color(owner, rating) }}">{{ rating }}</span>
                   </button>
 
   </div>

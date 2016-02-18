@@ -14,11 +14,10 @@
   <div class="container">
         <p>TextX member since {{ moment(user.user_since).format('MMM Do YYYY') }}.</p>
         <p>
-                {% if user.ratings_count > 0 %}
-                User rating: {{ user.rating }}/5.
+                User rating: <span class="label label-{{ user.rating_color(user, rating) }}">{{ rating }}</span>
         </p>
-                    <small class="text-muted">This user has been rated {{ user.ratings_count }} 
-                    {% if user.ratings_count == 1 %}
+                    <small class="text-muted">This user has been rated {{ user.total_votes }} 
+                    {% if user.total_votes == 1 %}
                         time.
                     {% else %}
                         times.
@@ -26,11 +25,6 @@
                     </small>
   
 
-                {% else %}
-        <p> 
-                {{ user.username }} has not been rated yet.
-        </p>
-                {% endif %}
   </div>
 </div>
 

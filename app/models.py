@@ -36,17 +36,21 @@ def load_user(user_id):
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
+
     username = db.Column(db.String(32), unique=True, index=True)
     email = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
-    is_online = db.Column(db.Boolean, default=False)
 
     # Back-reference to multiple books the user will have
     books = db.relationship("Book", backref="owner", lazy="dynamic")
+
     user_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_online = db.Column(db.DateTime(), default=datetime.utcnow) 
-    rating = db.Column(db.Float(precision=3), default = 0.0)
-    ratings_count = db.Column(db.Integer, default = 0)
+    is_online = db.Column(db.Boolean, default=True)
+
+    plus_votes = db.Column(db.Integer, default=0)
+    total_votes = db.Column(db.Integer, default=0)
+
     conversations = db.relationship("Conversation", back_populates="participants", secondary=relations_table)
 
     @property
@@ -59,6 +63,69 @@ class User(db.Model, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    ##
+    # Rating system based on the continuity-corrected Wilson score interval
+    # https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval#Wilson_score_interval_with_continuity_correction
+    # 
+    # With z = 1.96, there is a 95% chance that the true rating lies between the upper and lower limit of the interval
+    #
+    #                  2np + z^2 -+ [z*sqrt(z^2 - 1/n + 4*n*p*(1-p) +- (4p-2)) + 1]
+    # w_max, w_min =   ------------------------------------------------------------
+    #                                         2(n + z^2)
+    #
+    # Our rating system depends on the center of this interval, which simplifies to the computationally less demanding:
+    #
+    #         2x + z^2
+    # w_c =  ----------  where p = x/n
+    #        2(n + z^2)
+    ##
+    
+    ##
+    # Return a name describing the user's current rating
+    ##
+    @staticmethod
+    def show_rating(self):
+        if self.total_votes < 3:
+            return "Unrated"
+
+        name = ""
+        # Here, z = 1.44 corresponds to 85% confidence
+        rating = (self.plus_votes + 1.0368) / (self.total_votes + 2.0736)
+
+        if rating >= 0.95:
+            name = "Praiseworthy"
+        elif rating >= 0.8:
+            name = "Recommended"
+        elif rating >= 0.595:
+            name = "Positive"
+        elif rating >= 0.4:
+            name = "Neutral"
+        elif rating >= 0.2:
+            name = "Flaky"
+        else:
+            name = "Untrustworthy"
+
+        return name
+
+    ##
+    # Return css style colour assosiated with user's rating
+    ##
+    @staticmethod
+    def rating_color(self, name):
+        colors = { 'Praiseworthy':'success', 'Recommended':'success', 'Positive':'info', 'Neutral':'info', 'Flaky':'warning', 'Untrustworthy':'danger', 'Unrated':'default' }
+
+        return colors[name]
+    
+
+    ##
+    # Add new rating to user
+    ##
+    def add_rating(self, plus_vote):
+        self.total_votes += 1
+        
+        if plus_vote:
+            self.plus_votes += 1
+    
 
     # Define default representation of User
     def __repr__(self):
