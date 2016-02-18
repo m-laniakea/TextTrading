@@ -150,8 +150,6 @@ class User(db.Model, UserMixin):
 
         ## Populate db with user in the two lists, assign random rating
         for i in range(len(emails)):
-            # Biased-Random integer to determine rating
-            tmp = 0 if randint(0,6) < 3 else randint(1000, 5000)
 
             user = User(email = emails[i], username = unames[i], set_password = 'ftt', total_votes=0, plus_votes=0, is_online=False)
 

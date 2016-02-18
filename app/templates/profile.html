@@ -16,13 +16,20 @@
         <p>
                 User rating: <span class="label label-{{ user.rating_color(rating) }}">{{ rating }}</span>
         </p>
-                    <small class="text-muted">This user has been rated {{ user.total_votes }} 
-                    {% if user.total_votes == 1 %}
-                        time.
-                    {% else %}
-                        times.
-                    {% endif %}
-                    </small>
+        <p>Rate this user: 
+                  <a class="btn btn-success btn-xs" href="/add"><span class="glyphicon glyphicon-plus"></span></a>
+                  <a class="btn btn-danger btn-xs" href="/add"><span class="glyphicon glyphicon-minus"></span></a>
+
+        </p> 
+                    
+        
+        <small class="text-muted">This user has been rated {{ user.total_votes }} 
+                {% if user.total_votes == 1 %}
+                time.
+                {% else %}
+                times.
+                {% endif %}
+        </small>
   
 
   </div>

@@ -267,3 +267,34 @@ def conversation(cid):
     # Redirect to previous  path
     return redirect(request.referrer)
     
+
+##
+# User rating route
+##
+@main.route('/r/<uid>/<positive>')
+def rate_user(uid, positive):
+
+    if current_user.is_anonymous:
+        flash('You must be logged in to rate users.', 'info')
+        return redirect(url_for('main.index'))
+
+    user = User.query.filter_by(id=uid).first()
+    
+    if user:
+        if current_user == user:
+            flash('You cannot rate yourself.', 'warning')
+
+        elif positive == "True" or positive == "False":
+            rating = True if positive == 'True' else False
+            user.add_rating(rating)
+            flash(user.username + ' successfully rated.', 'success')
+
+        else:
+            flash('Invalid rating.', 'warning')
+
+        return redirect(url_for('main.profile', username = user.username))
+
+    else:
+
+        flash('A user who does not exist cannot be rated.', 'info')
+        abort(404)
