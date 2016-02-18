@@ -93,7 +93,7 @@ def profile(username):
     if user:
         books = user.books.all()
         conversations = user.conversations
-        rating = user.show_rating(user)
+        rating = user.show_rating()
         return render_template('profile.html', form=form, user=user, books=books, conversations=conversations, rating=rating)
 
     flash("\"" + username + '\" is not a member yet.', 'info')
@@ -129,7 +129,7 @@ def book(bookid):
 
     if book:
         owner = User.query.get(book.owner_id)
-        rating = owner.show_rating(owner)
+        rating = owner.show_rating()
         return render_template('book.html', form=form, form2=form2, book=book, owner=owner, rating=rating)
 
     flash("This book does not exist.", "info")

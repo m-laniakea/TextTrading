@@ -83,7 +83,6 @@ class User(db.Model, UserMixin):
     ##
     # Return a name describing the user's current rating
     ##
-    @staticmethod
     def show_rating(self):
         if self.total_votes < 3:
             return "Unrated"
@@ -110,7 +109,6 @@ class User(db.Model, UserMixin):
     ##
     # Return css style colour assosiated with user's rating
     ##
-    @staticmethod
     def rating_color(self, name):
         colors = { 'Praiseworthy':'success', 'Recommended':'success', 'Positive':'info', 'Neutral':'info', 'Flaky':'warning', 'Untrustworthy':'danger', 'Unrated':'default' }
 
@@ -129,7 +127,7 @@ class User(db.Model, UserMixin):
 
     # Define default representation of User
     def __repr__(self):
-        return 'User %s "%s", rating: %s' % (self.username, self.email, str(self.rating))
+        return 'User %s "%s", rating: %s' % (self.username, self.email, self.show_rating())
 
     ##
     #
@@ -142,25 +140,28 @@ class User(db.Model, UserMixin):
     ##
     @staticmethod
     def populate():
-        # Initialize db with models from this file
-        db.create_all()
-        print('Database initiation: \033[92mSuccess.\033[0m')
 
         # Get base directory for cross-system filepaths
         basedir = os.path.abspath(os.path.dirname(__file__))
         wordlist = [l.strip() for l in open(os.path.join(basedir, "dct.txt"))]
 
-        emails = ["bruce@uw.edu", "cate@uw.edu", "m-laniakea@uw.edu", "erick@uw.edu", "bitfracture@uw.edu", "ruby@uw.edu"]
-        unames = ["Bruce", "Cate", "m-laniakea", "erickgnouw", "Bitfracture", "Ruby"]
+        emails = ["bruce@uw.edu", "cate@uw.edu", "m-laniakea@uw.edu", "erick@uw.edu", "bitfracture@uw.edu", "ruby@uw.edu", "aarongupta@uw.edu"]
+        unames = ["Bruce", "Cate", "m-laniakea", "erickgnouw", "Bitfracture", "Ruby", "aarongupta"]
 
         ## Populate db with user in the two lists, assign random rating
         for i in range(len(emails)):
             # Biased-Random integer to determine rating
             tmp = 0 if randint(0,6) < 3 else randint(1000, 5000)
 
-            user = User(email = emails[i], username = unames[i], set_password = 'ftt',
-                    rating = tmp/1000.0, ratings_count = 0 if (tmp == 0) else randint(1, 88) )
+            user = User(email = emails[i], username = unames[i], set_password = 'ftt', total_votes=0, plus_votes=0, is_online=False)
+
+            for j in range( randint(0, 13) ):
+                tmp = True if randint(0,5) < 3 else False
+                user.add_rating(tmp)
+
+
             db.session.add(user)
+
 
             ## Gen fake books with random names, 
             ## titles, prices, ISBNs, & conditions
