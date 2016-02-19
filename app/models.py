@@ -18,6 +18,14 @@ relations_table = db.Table('conversations_users', db.Model.metadata,
         db.Column('user_id', db.Integer, db.ForeignKey('users.id'))
 )
 
+##
+# Class relating user voters & voted by
+##
+class Vote(db.Model):
+    __tablename__ = 'votes'
+    voter_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    voted_by_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -52,6 +60,11 @@ class User(db.Model, UserMixin):
     total_votes = db.Column(db.Integer, default=0)
 
     conversations = db.relationship("Conversation", back_populates="participants", secondary=relations_table)
+
+    # Establish voter/voted_by relation
+    users_voted = db.relationship("Vote", foreign_keys=[Vote.voted_by_id], lazy="dynamic", backref=db.backref("voted_by", lazy="joined")) 
+    users_voted_by = db.relationship("Vote", foreign_keys=[Vote.voter_id], lazy="dynamic", backref=db.backref("voter", lazy="joined"))
+
 
     @property
     def password(self):
