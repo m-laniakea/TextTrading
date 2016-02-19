@@ -69,3 +69,8 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+#OS Cache and Attribute Files
+.DS_Store
+thumbs.db
+desktop.ini
