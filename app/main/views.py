@@ -5,7 +5,7 @@
 from flask import render_template, redirect, request, url_for, session, current_app, flash, abort
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from .. import db
-from ..models import User, Book, Conversation, Message
+from ..models import User, Book, Conversation, Message, Vote
 from . import main
 from . forms import LoginForm, SignupForm, BookForm, MessageForm, ConvInitForm, flash_errors, process_login
 from datetime import datetime
@@ -286,8 +286,34 @@ def rate_user(uid, positive):
 
         elif positive == "True" or positive == "False":
             rating = True if positive == 'True' else False
-            user.add_rating(rating)
-            flash(user.username + ' successfully rated.', 'success')
+        
+            old_vote = False 
+            # Check if current user has rated this user
+            for v in current_user.voted_for:
+                if v.voted_for == user:
+                    # Get vote last cast
+                    old_vote = v
+                    break
+
+            # If vote already cast
+
+            if old_vote:
+                # If new vote is same as old
+                if rating == old_vote.positive:
+                    flash('You already gave this vote to ' + user.username + '.', 'info')
+                    return redirect(url_for('main.profile', username=user.username))
+
+                user.adjust_rating(old_vote.positive)
+                old_vote.positive = rating
+                flash('Rating for ' + user.username + ' successfully updated.', 'success')
+
+            else:
+                user.add_rating(rating)
+                vote = Vote(voted_for=user, voted_by=current_user, positive=rating)
+                db.session.add(vote)
+                db.session.commit()
+                flash(user.username + ' successfully rated.', 'success')
+
 
         else:
             flash('Invalid rating.', 'warning')

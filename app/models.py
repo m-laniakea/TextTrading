@@ -23,8 +23,9 @@ relations_table = db.Table('conversations_users', db.Model.metadata,
 ##
 class Vote(db.Model):
     __tablename__ = 'votes'
-    voter_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    voted_for_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     voted_by_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    positive = db.Column(db.Boolean, default=False)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -62,8 +63,8 @@ class User(db.Model, UserMixin):
     conversations = db.relationship("Conversation", back_populates="participants", secondary=relations_table)
 
     # Establish voter/voted_by relation
-    users_voted = db.relationship("Vote", foreign_keys=[Vote.voted_by_id], lazy="dynamic", backref=db.backref("voted_by", lazy="joined")) 
-    users_voted_by = db.relationship("Vote", foreign_keys=[Vote.voter_id], lazy="dynamic", backref=db.backref("voter", lazy="joined"))
+    voted_for = db.relationship("Vote", foreign_keys=[Vote.voted_by_id], lazy="dynamic", backref=db.backref("voted_by", lazy="joined"), cascade='all') 
+    voted_by = db.relationship("Vote", foreign_keys=[Vote.voted_for_id], lazy="dynamic", backref=db.backref("voted_for", lazy="joined"), cascade='all')
 
 
     @property
@@ -136,7 +137,15 @@ class User(db.Model, UserMixin):
         
         if plus_vote:
             self.plus_votes += 1
-    
+   ##
+   # Adjust rating if already voted for
+   ##
+    def adjust_rating(self, old_positive):
+        if old_positive:
+           self.plus_votes -= 1
+        else:
+            self.plus_votes += 1
+
 
     # Define default representation of User
     def __repr__(self):
