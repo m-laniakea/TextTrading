@@ -18,6 +18,15 @@ relations_table = db.Table('conversations_users', db.Model.metadata,
         db.Column('user_id', db.Integer, db.ForeignKey('users.id'))
 )
 
+##
+# Class relating user voters & voted by
+##
+class Vote(db.Model):
+    __tablename__ = 'votes'
+    voted_for_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    voted_by_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    positive = db.Column(db.Boolean, default=False)
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -36,18 +45,27 @@ def load_user(user_id):
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
+
     username = db.Column(db.String(32), unique=True, index=True)
     email = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
-    is_online = db.Column(db.Boolean, default=True)
 
     # Back-reference to multiple books the user will have
     books = db.relationship("Book", backref="owner", lazy="dynamic")
+
     user_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_online = db.Column(db.DateTime(), default=datetime.utcnow) 
-    rating = db.Column(db.Float(precision=3), default = 0.0)
-    ratings_count = db.Column(db.Integer, default = 0)
+    is_online = db.Column(db.Boolean, default=True)
+
+    plus_votes = db.Column(db.Integer, default=0)
+    total_votes = db.Column(db.Integer, default=0)
+
     conversations = db.relationship("Conversation", back_populates="participants", secondary=relations_table)
+
+    # Establish voter/voted_by relation
+    voted_for = db.relationship("Vote", foreign_keys=[Vote.voted_by_id], lazy="dynamic", backref=db.backref("voted_by", lazy="joined"), cascade='all') 
+    voted_by = db.relationship("Vote", foreign_keys=[Vote.voted_for_id], lazy="dynamic", backref=db.backref("voted_for", lazy="joined"), cascade='all')
+
 
     @property
     def password(self):
@@ -59,10 +77,79 @@ class User(db.Model, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    ##
+    # Rating system based on the continuity-corrected Wilson score interval
+    # https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval#Wilson_score_interval_with_continuity_correction
+    # 
+    # With z = 1.96, there is a 95% chance that the true rating lies between the upper and lower limit of the interval
+    #
+    #                  2np + z^2 -+ [z*sqrt(z^2 - 1/n + 4*n*p*(1-p) +- (4p-2)) + 1]
+    # w_max, w_min =   ------------------------------------------------------------
+    #                                         2(n + z^2)
+    #
+    # Our rating system depends on the center of this interval, which simplifies to the computationally less demanding:
+    #
+    #         2x + z^2
+    # w_c =  ----------  where p = x/n
+    #        2(n + z^2)
+    ##
+    
+    ##
+    # Return a name describing the user's current rating
+    ##
+    def show_rating(self):
+        if self.total_votes < 3:
+            return "Unrated"
+
+        name = ""
+        # Here, z = 1.44 corresponds to 85% confidence
+        rating = (self.plus_votes + 1.0368) / (self.total_votes + 2.0736)
+
+        if rating >= 0.95:
+            name = "Praiseworthy"
+        elif rating >= 0.8:
+            name = "Recommended"
+        elif rating >= 0.595:
+            name = "Positive"
+        elif rating >= 0.4:
+            name = "Neutral"
+        elif rating >= 0.2:
+            name = "Flaky"
+        else:
+            name = "Untrustworthy"
+
+        return name
+
+    ##
+    # Return css style colour assosiated with user's rating
+    ##
+    def rating_color(self, name):
+        colors = { 'Praiseworthy':'success', 'Recommended':'success', 'Positive':'info', 'Neutral':'info', 'Flaky':'warning', 'Untrustworthy':'danger', 'Unrated':'default' }
+
+        return colors[name]
+    
+
+    ##
+    # Add new rating to user
+    ##
+    def add_rating(self, plus_vote):
+        self.total_votes += 1
+        
+        if plus_vote:
+            self.plus_votes += 1
+   ##
+   # Adjust rating if already voted for
+   ##
+    def adjust_rating(self, old_positive):
+        if old_positive:
+           self.plus_votes -= 1
+        else:
+            self.plus_votes += 1
+
 
     # Define default representation of User
     def __repr__(self):
-        return 'User %s "%s", rating: %s' % (self.username, self.email, str(self.rating))
+        return 'User %s "%s", rating: %s' % (self.username, self.email, self.show_rating())
 
     ##
     #
@@ -75,25 +162,26 @@ class User(db.Model, UserMixin):
     ##
     @staticmethod
     def populate():
-        # Initialize db with models from this file
-        db.create_all()
-        print('Database initiation: \033[92mSuccess.\033[0m')
 
         # Get base directory for cross-system filepaths
         basedir = os.path.abspath(os.path.dirname(__file__))
         wordlist = [l.strip() for l in open(os.path.join(basedir, "dct.txt"))]
 
-        emails = ["bruce@uw.edu", "cate@uw.edu", "m-laniakea@uw.edu", "erick@uw.edu", "bitfracture@uw.edu", "ruby@uw.edu"]
-        unames = ["Bruce", "Cate", "m-laniakea", "erickgnouw", "Bitfracture", "Ruby"]
+        emails = ["bruce@uw.edu", "cate@uw.edu", "m-laniakea@uw.edu", "erick@uw.edu", "bitfracture@uw.edu", "ruby@uw.edu", "aarongupta@uw.edu"]
+        unames = ["Bruce", "Cate", "m-laniakea", "erickgnouw", "Bitfracture", "Ruby", "aarongupta"]
 
         ## Populate db with user in the two lists, assign random rating
         for i in range(len(emails)):
-            # Biased-Random integer to determine rating
-            tmp = 0 if randint(0,6) < 3 else randint(1000, 5000)
 
-            user = User(email = emails[i], username = unames[i], set_password = 'ftt',
-                    rating = tmp/1000.0, ratings_count = 0 if (tmp == 0) else randint(1, 88) )
+            user = User(email = emails[i], username = unames[i], set_password = 'ftt', total_votes=0, plus_votes=0, is_online=False)
+
+            for j in range( randint(0, 13) ):
+                tmp = True if randint(0,5) < 3 else False
+                user.add_rating(tmp)
+
+
             db.session.add(user)
+
 
             ## Gen fake books with random names, 
             ## titles, prices, ISBNs, & conditions

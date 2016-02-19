@@ -30,7 +30,12 @@ def create_app(name):
     # Initialize and populate db 
     ##
     with app.app_context():
-        db.create_all()
+
+        try:
+            db.create_all()
+            print('Database initiation: \033[92mSuccess.\033[0m')
+        except:
+            print('Database initiation: \033[91mFailed.\033[0m')
 
         from models import User, Book
 

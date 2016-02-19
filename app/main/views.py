@@ -5,7 +5,7 @@
 from flask import render_template, redirect, request, url_for, session, current_app, flash, abort
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from .. import db
-from ..models import User, Book, Conversation, Message
+from ..models import User, Book, Conversation, Message, Vote
 from . import main
 from . forms import LoginForm, SignupForm, BookForm, MessageForm, ConvInitForm, flash_errors, process_login
 from datetime import datetime
@@ -93,7 +93,8 @@ def profile(username):
     if user:
         books = user.books.all()
         conversations = user.conversations
-        return render_template('profile.html', form=form, user=user, books=books, conversations=conversations)
+        rating = user.show_rating()
+        return render_template('profile.html', form=form, user=user, books=books, conversations=conversations, rating=rating)
 
     flash("\"" + username + '\" is not a member yet.', 'info')
     abort(404)
@@ -128,7 +129,8 @@ def book(bookid):
 
     if book:
         owner = User.query.get(book.owner_id)
-        return render_template('book.html', form=form, form2=form2, book=book, owner=owner)
+        rating = owner.show_rating()
+        return render_template('book.html', form=form, form2=form2, book=book, owner=owner, rating=rating)
 
     flash("This book does not exist.", "info")
     abort(404)
@@ -221,6 +223,7 @@ def edit_book():
 ##
 @main.route('/books', methods=['GET','POST'])
 def books():
+ 
 
     form = LoginForm()       
     s_form = ConvInitForm()
@@ -273,6 +276,7 @@ def conversation(cid):
     flash('Only conversation participants may view this page.', 'warning')
     # Redirect to previous  path
     return redirect(request.referrer)
+    
 
 ##
 # Searches database with user given search parameters. 
@@ -296,11 +300,59 @@ def search():
     return render_template('browse.html', form=form, s_form=s_form, allbooks=allbooks, searchState=searchState);
     
 
+##
+# User rating route
+##
+@main.route('/r/<uid>/<positive>')
+def rate_user(uid, positive):
+
+    if current_user.is_anonymous:
+        flash('You must be logged in to rate users.', 'info')
+        return redirect(url_for('main.index'))
+
+    user = User.query.filter_by(id=uid).first()
+    
+    if user:
+        if current_user == user:
+            flash('You cannot rate yourself.', 'warning')
+
+        elif positive == "True" or positive == "False":
+            rating = True if positive == 'True' else False
+        
+            old_vote = False 
+            # Check if current user has rated this user
+            for v in current_user.voted_for:
+                if v.voted_for == user:
+                    # Get vote last cast
+                    old_vote = v
+                    break
+
+            # If vote already cast
+
+            if old_vote:
+                # If new vote is same as old
+                if rating == old_vote.positive:
+                    flash('You already gave this vote to ' + user.username + '.', 'info')
+                    return redirect(url_for('main.profile', username=user.username))
+
+                user.adjust_rating(old_vote.positive)
+                old_vote.positive = rating
+                flash('Rating for ' + user.username + ' successfully updated.', 'success')
+
+            else:
+                user.add_rating(rating)
+                vote = Vote(voted_for=user, voted_by=current_user, positive=rating)
+                db.session.add(vote)
+                db.session.commit()
+                flash(user.username + ' successfully rated.', 'success')
 
 
+        else:
+            flash('Invalid rating.', 'warning')
 
+        return redirect(url_for('main.profile', username = user.username))
 
+    else:
 
-
-
-
+        flash('A user who does not exist cannot be rated.', 'info')
+        abort(404)
