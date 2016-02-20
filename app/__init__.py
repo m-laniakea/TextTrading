@@ -17,14 +17,10 @@ moment = Moment()
 
 login_manager.session_protection = 'strong'
 
-def create_app(name):
-    app = Flask(__name__)
-    app.config.from_object(cfg[name])
-
-    cfg[name].init_app(app)
-
-    login_manager.init_app(app)
-    db.init_app(app)
+##
+# Database popoulation for dev mode
+##
+def db_init(app):
 
     ##
     # Initialize and populate db 
@@ -43,6 +39,22 @@ def create_app(name):
             User.populate()
         except:
             print('Database: \033[93mAlready Populated.\033[0m')
+
+
+
+def create_app(name):
+    app = Flask(__name__)
+    app.config.from_object(cfg[name])
+
+    cfg[name].init_app(app)
+
+    login_manager.init_app(app)
+    db.init_app(app)
+
+
+    if name == 'dev' or name == 'default':
+        db_init(app)
+
 
 
     bootstrap.init_app(app)
