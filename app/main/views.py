@@ -53,7 +53,7 @@ def logout():
     db.session.commit()
     logout_user()
     flash('Logout successful', 'success')
-    return redirect(url_for('main.index')) 
+    return redirect( url_for('main.index') ) 
 
 ##
 # Handle register route
@@ -64,7 +64,7 @@ def register():
 
     if current_user.is_authenticated:
         flash('You\'ve already registered, ' + current_user.username + '.', 'info')
-        return redirect(url_for('main.index'))
+        return redirect( url_for('main.index') )
 
     if form.validate_on_submit():
         new_user = User(email=form.email.data.lower(), username=form.username.data, set_password = form.password.data)
@@ -72,7 +72,7 @@ def register():
         db.session.commit()
         login_user(new_user, True)
         flash('Welcome to TextX, ' + new_user.username + '! You\'ve been logged in.', 'success')
-        return redirect(url_for('main.profile', username=current_user.username))
+        return redirect( url_for('main.profile', username=current_user.username) )
 
     # Flash form errors for user
     flash_errors(form)
@@ -90,6 +90,8 @@ def profile(username):
         process_login(form)
 
     user = User.query.filter_by(username=username).first()
+
+    # If this user exists
     if user:
         books = user.books.all()
         conversations = user.conversations
@@ -111,22 +113,28 @@ def book(bookid):
     if form.validate_on_submit():
         process_login(form)
 
-    book = Book.query.get(int(bookid))
+    book = Book.query.get( int(bookid) )
 
+    # User has hit the "Contact Owner" button
     if form2.validate_on_submit():
+        
+        if book.owner == current_user:
+            return redirect( url_for('main.book', bookid=book.id) )
+
         c = Conversation(subject=book.title, book_id=book.id)
         c.participants.append(current_user)
         c.participants.append(book.owner)
         m = Message(contents = "I'm interested in your book \"" + book.title + "\".", sender=current_user.username, conversation=c)
 
+        # Add conversation to db
         db.session.add(c)
-        db.session.add(m)
         db.session.commit()
         
         flash('Trade request sent to ' + book.owner.username, 'success')
-        return redirect(url_for('main.conversation', cid = c.id))
+        return redirect( url_for('main.conversation', cid = c.id) )
 
 
+    # If the book exists
     if book:
         owner = User.query.get(book.owner_id)
         rating = owner.show_rating()
@@ -137,45 +145,51 @@ def book(bookid):
 
 
 
-
-
 ##
 # Deletion route
+#
+# <t> gives the type of object to delete
+# <iid> represents the item id
 ##
 @main.route('/d/<t>/<iid>')
 def delete_book(t, iid):
     
     if current_user.is_anonymous:
         flash("You must be logged-in to delete items.", "info")
-        return redirect(url_for('main.index'))
+        return redirect( url_for('main.index') )
 
     # If the item to be deleted is a conversation
     if t == "c":
-        c = Conversation.query.get(int(iid))
+        c = Conversation.query.get( int(iid) )
+        # If this conversation exists
         if c:
             # if requestor is not a participant
             if not current_user in c.participants:
                 flash("Only conversation participants may delete conversations.", 'warning')
 
-
             else: 
                 flash('Conversation regarding \"' + c.subject + '\" successfully removed', 'success')
+
+                # Delete all mesages in the conversation
                 for m in c.messages:
                     db.session.delete(m)
 
                 db.session.delete(c)
 
                 db.session.commit()
-            return redirect(url_for('main.profile', username = current_user.username))
+
+            return redirect( url_for('main.profile', username = current_user.username) )
 
 
 
     # If deletion type book
     elif t == "b":
 
-        book = Book.query.get(int(iid))
+        book = Book.query.get( int(iid) )
 
+        # If book exists
         if book:
+
             if book.owner_id == current_user.id:
                 db.session.delete(book)
                 db.session.commit()
@@ -184,8 +198,9 @@ def delete_book(t, iid):
             else:
                 flash("Only the owner may delete their book.", "warning")
 
-        return redirect(url_for('main.profile', username = current_user.username))
+        return redirect( url_for('main.profile', username = current_user.username) )
 
+    # Item was none of the supported deletion types
     flash("This item does not exist.", "info")
     abort(404)
 
@@ -201,18 +216,22 @@ def edit_book():
 
     if current_user.is_anonymous:
         flash("You must be logged-in to add books.", "info")
-        return redirect(url_for('main.index'))
+        return redirect( url_for('main.index') )
 
-
+    # User has hit "Save" on BookForm
     if form.validate_on_submit():
-        b = Book(title=form.title.data, author=form.author.data, condition=form.condition.data,
-                isbn=form.isbn.data, price=form.price.data, owner_id=current_user.id)
+        b = Book(title=form.title.data, author=form.author.data, 
+                condition=form.condition.data, isbn=form.isbn.data, 
+                price=form.price.data, owner_id=current_user.id)
 
         db.session.add(b)
         db.session.commit()
         flash("Book added successfully", "success")
-        return redirect(url_for('main.profile', username=current_user.username))
 
+        # Return user to their profile
+        return redirect( url_for('main.profile', username=current_user.username) )
+
+    # Render errors from BookForm if present
     flash_errors(form)
     return render_template("bookform.html", form=form)
 
@@ -226,12 +245,15 @@ def books():
  
 
     form = LoginForm()       
+    # Search submit button
     s_form = ConvInitForm()
-        
+    
+    # If user hit login
     if form.validate_on_submit():
         process_login(form)
         return redirect('/books')
 
+    # If user hit "search"
     if s_form.validate_on_submit():
         return search()
     else:
@@ -251,7 +273,7 @@ def conversation(cid):
 
     if current_user.is_anonymous:
         flash('You must be logged in to view your conversations.', 'info')
-        return redirect(url_for('main.index'))
+        return redirect( url_for('main.index') )
 
     conversation = Conversation.query.get(cid)
 
@@ -264,10 +286,13 @@ def conversation(cid):
         m = Message(contents=form.text.data, sender=current_user.username)
         conversation.messages.append(m)
         db.session.commit()
-        # Blank field for next submission
+        # Blank out field for next submission
         form.text.data =""
 
-
+    ##
+    # Check if user is a participants
+    # and may view this conversation
+    ##
     for p in conversation.participants:
         if current_user == p:
             messages = conversation.messages
@@ -283,18 +308,22 @@ def conversation(cid):
 ##
 def search():
     form = LoginForm()
+    # Search submit form
     s_form = ConvInitForm()
     
+    # User has hit login
     if form.validate_on_submit():
         process_login(form)
 
     search = request.form['search'];
     searchState = "All Books"
+
     if len(search) > 0:
-        #Seaches if title contains the search parameter and then searches isbn 
-        allbooks = Book.query.filter(Book.title.contains(search) | Book.isbn.contains(search) | Book.author.contains(search));
+        # Searches if title contains the search parameter
+        allbooks = Book.query.filter( Book.title.contains(search) | Book.isbn.contains(search) | Book.author.contains(search) );
         searchState = 'Results for \"'+ search + '\"';
     else:
+        # User has entered a blank search, just display all books
         allbooks = Book.query.order_by("id desc")
 
     return render_template('browse.html', form=form, s_form=s_form, allbooks=allbooks, searchState=searchState);
@@ -302,24 +331,31 @@ def search():
 
 ##
 # User rating route
+#
+# <uid> represents the user id to be voted
+#
+# if <positive> is true, rating is positive
 ##
 @main.route('/r/<uid>/<positive>')
 def rate_user(uid, positive):
 
     if current_user.is_anonymous:
         flash('You must be logged in to rate users.', 'info')
-        return redirect(url_for('main.index'))
+        return redirect( url_for('main.index') )
 
     user = User.query.filter_by(id=uid).first()
     
+    # if user exists
     if user:
         if current_user == user:
             flash('You cannot rate yourself.', 'warning')
 
+        # Check if valid rating was passed
         elif positive == "True" or positive == "False":
             rating = True if positive == 'True' else False
         
             old_vote = False 
+
             # Check if current user has rated this user
             for v in current_user.voted_for:
                 if v.voted_for == user:
@@ -327,18 +363,20 @@ def rate_user(uid, positive):
                     old_vote = v
                     break
 
-            # If vote already cast
-
+            # If vote already cast for this user
             if old_vote:
                 # If new vote is same as old
                 if rating == old_vote.positive:
                     flash('You already gave this vote to ' + user.username + '.', 'info')
-                    return redirect(url_for('main.profile', username=user.username))
-
+                    return redirect( url_for('main.profile', username=user.username) )
+                
+                # New vote is different, adjust users rating
                 user.adjust_rating(old_vote.positive)
+                # Save changed vote
                 old_vote.positive = rating
                 flash('Rating for ' + user.username + ' successfully updated.', 'success')
-
+            
+            # User is casting a brand new vote
             else:
                 user.add_rating(rating)
                 vote = Vote(voted_for=user, voted_by=current_user, positive=rating)
@@ -346,13 +384,12 @@ def rate_user(uid, positive):
                 db.session.commit()
                 flash(user.username + ' successfully rated.', 'success')
 
-
+        # Rating is not True or False; rating is invalid
         else:
             flash('Invalid rating.', 'warning')
 
-        return redirect(url_for('main.profile', username = user.username))
+        return redirect( url_for('main.profile', username = user.username) )
 
     else:
-
         flash('A user who does not exist cannot be rated.', 'info')
         abort(404)
