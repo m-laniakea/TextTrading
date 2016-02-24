@@ -112,6 +112,7 @@ def book(bookid):
 
     if form.validate_on_submit():
         process_login(form)
+        return redirect( url_for('main.book', bookid=bookid) )
 
     book = Book.query.get( int(bookid) )
 
@@ -374,6 +375,7 @@ def rate_user(uid, positive):
                 user.adjust_rating(old_vote.positive)
                 # Save changed vote
                 old_vote.positive = rating
+                db.session.commit()
                 flash('Rating for ' + user.username + ' successfully updated.', 'success')
             
             # User is casting a brand new vote
