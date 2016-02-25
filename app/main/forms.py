@@ -28,6 +28,8 @@ class SignupForm(Form):
     username = StringField('username', validators=[Required(), Length(1,64), Regexp('^[a-zA-Z0-9][\._a-z0-9]*$', 0, 
         'Your username may start with an upper- or lowercase letter or a number. Only lowercase letters, numbers, underscores, and periods may follow.')])
 
+    location = StringField('Location', validators=[Required(), Length(1,64)])
+
     password = PasswordField('Password', validators = [Required(), EqualTo('password_confirmation', message='Your passwords must match.')]) 
     password_confirmation = PasswordField('Confirm Password', validators = [Required()])
 

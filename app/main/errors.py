@@ -26,7 +26,7 @@ def page_not_found(e):
 ##
 # Define action for internal server error
 ##
-#@main.app_errorhandler(500)
+@main.app_errorhandler(500)
 def error_internal(e):
 
     form = LoginForm()
