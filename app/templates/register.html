@@ -13,7 +13,7 @@
 
             {{ form.email(class="form-control", placeholder="email@domain.com") }}
             {{ form.username(class="form-control", placeholder="username", size=30, maxlength=32) }}
-            {{ form.location(class="form-control", placeholder="your school", id="autocomplete") }}
+            {{ form.location(class="form-control", placeholder="your school", id="autoc") }}
             {{ form.password(class="form-control", placeholder="password") }}
             {{ form.password_confirmation(class="form-control", placeholder="Confirm password") }}
             {{ form.captcha }}
@@ -24,4 +24,19 @@
 
 </div>
 
+
+
 {% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.autoc.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/loc.autoc.js') }}"></script>
+{% endblock %}
+
+
+
+
+
+
