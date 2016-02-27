@@ -13,7 +13,7 @@ $(function(){
 
         
   $('#autoc').autocomplete({
-    lookup: locations,
+    lookup: locations
   });
   
 
