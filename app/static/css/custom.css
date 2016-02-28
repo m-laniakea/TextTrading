@@ -1,0 +1,9 @@
+.img_right
+{
+    display: block;
+    float: right;
+    width: 30%;
+    margin-top: 20px;
+    margin-right: 0px;
+    margin-left: 16px;
+}
