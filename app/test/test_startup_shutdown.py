@@ -1,5 +1,5 @@
 ##
-# Simple unittest to assert app 
+# Simple unit test to assert app 
 # startup/shutdown sequence work as intended
 #
 # Recommend setting RUN_MODE env. variable to 'test'
