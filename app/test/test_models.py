@@ -20,6 +20,4 @@ class TestModels(unittest.TestCase):
 	# Try'na get a grip here
     def test_sanity_check(self):
         self.assertTrue(1 == 1)
-	
-	def 
 
