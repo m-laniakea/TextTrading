@@ -7,7 +7,7 @@
 <h2>"{{ book.title }}"</h2>
 <div class="container">
   <div class="list-group">
-                  <button type="button" class="list-group-item" }}>Written by: <b>{{ book.author }}</b></button>
+                  <button type="button" class="list-group-item" >Written by: <b>{{ book.author }}</b></button>
                   <button type="button" class="list-group-item"> Price: <b>
                           {% if book.price <= 0 %}
                                   Free
@@ -16,6 +16,7 @@
                           {% endif %}
                           </b>
                   </button>
+                  <button type="button" class="list-group-item">Location: <b>{{ owner.location }}</b></button>
                   <button type="button" class="list-group-item" }}>Condition: <b>{{ book.condition }}/5</b></button>
                   <li type="button" class="list-group-item" }}>ISBN13: <a href="http://www.amazon.com/gp/search?keywords={{ book.isbn }}"><b>{{ book.isbn }}</b></a></li>
                   <li type="button" class="list-group-item" }}>Owner: <a href="/u/{{ owner.username }}"><b>{{ owner.username }}</b></a></li>
