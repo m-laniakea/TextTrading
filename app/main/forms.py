@@ -106,3 +106,9 @@ def process_login(form):
 
     flash('Invalid email + password combination.', 'danger')
     return False
+
+
+class SearchForm(Form):
+    location = StringField('Location', validators=[Required(), Length(1,64)])
+    search = StringField('Search Terms', validators=[Required(), Length(1,128)])
+    submit = SubmitField('Search')

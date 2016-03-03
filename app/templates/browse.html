@@ -9,9 +9,12 @@
         <div class="list-group">
           <form action="" method="post">
             {{ s_form.hidden_tag() }}
-            <input type="text" method=post style="width: 100%" name="search" class="list-group-item" placeholder="Search by Title, Author, ISBN, ...">
+            {{ s_form.search(style="width: 100%", class="list-group-item", placeholder="Search by Title, Author, ISBN, ...") }}
+            {{ s_form.location(style="width: 100%", class="list-group-item", placeholder="Your school") }}
+            {{ s_form.submit(class="hidden") }}
+            <a type="button" class="list-group-item" href="#"><b>Results for {{ searchState }}</b></a>
           </form>
-          {% if allbooks %}
+          {% if allbooks[0] %}
                 {% for book in allbooks %}
                 <a type="button" class="list-group-item" href='/b/{{ book.id }}'>
                         "{{ book.title }}" by {{ book.author }}
@@ -28,7 +31,7 @@
                 {% endfor %}
 
         {% else %}
-        <a type="button" class="list-group-item list-group-item-info"><b>No books yet :(</b></a>
+        <a type="button" class="list-group-item list-group-item-info"><b>No books found :(</b></a>
         {% endif %}
 
   </div>
