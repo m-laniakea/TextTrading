@@ -2,13 +2,21 @@
 
 {% block title %}Register for TextX{% endblock %}
 
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.autoc.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/loc.autoc.js') }}"></script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/autoc.css') }}">
+{% endblock %}
+
+
 {% block page_content %}
 
 <div class="page-header">
   <h4>Register</h4>
 
 
-  <form action ="" method="post" name="register" class="form-group" >
+  <form action ="" method="post" name="register" class="form-group">
           {{ form.hidden_tag() }}
 
             {{ form.email(class="form-control", placeholder="email@domain.com") }}
@@ -17,6 +25,7 @@
             {{ form.password(class="form-control", placeholder="password") }}
             {{ form.password_confirmation(class="form-control", placeholder="confirm password") }}
             {{ form.captcha }}
+            <p></p>
             {{ form.submit(class="btn btn-success") }}
   </form>
 
@@ -26,17 +35,3 @@
 
 
 {% endblock %}
-
-
-{% block scripts %}
-{{ super() }}
-<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.autoc.min.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/loc.autoc.js') }}"></script>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/autoc.css') }}">
-{% endblock %}
-
-
-
-
-
-

@@ -13,6 +13,7 @@
 
 <div class="jumbotron">
   <div class="container">
+        <p>{{ user.location }}</p>
         <p>TextX member since {{ moment(user.user_since).format('MMM Do YYYY') }}.</p>
         <p>
                 User rating: <span class="label label-{{ user.rating_color(rating) }}">{{ rating }}</span>

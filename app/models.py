@@ -49,6 +49,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(32), unique=True, index=True)
     email = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
+    location = db.Column(db.String(64), index=True)
 
     # Back-reference to multiple books the user will have
     books = db.relationship("Book", backref="owner", lazy="dynamic")
@@ -173,7 +174,8 @@ class User(db.Model, UserMixin):
         ## Populate db with user in the two lists, assign random rating
         for i in range(len(emails)):
 
-            user = User(email = emails[i], username = unames[i], set_password = 'ftt', total_votes=0, plus_votes=0, is_online=False)
+            user = User(email = emails[i], username = unames[i], set_password = 'ftt', 
+                    total_votes=0, plus_votes=0, is_online=False, location="University of Washington - Bothell")
 
             for j in range( randint(0, 13) ):
                 tmp = True if randint(0,5) < 3 else False
