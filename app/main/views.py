@@ -7,7 +7,7 @@ from flask.ext.login import login_user, logout_user, login_required, current_use
 from .. import db
 from ..models import User, Book, Conversation, Message, Vote
 from . import main
-from . forms import LoginForm, SignupForm, BookForm, MessageForm, ConvInitForm, flash_errors, process_login
+from . forms import LoginForm, SignupForm, BookForm, MessageForm, ConvInitForm, SearchForm, flash_errors, process_login
 from datetime import datetime
 
 ##
@@ -236,33 +236,6 @@ def edit_book():
     flash_errors(form)
     return render_template("bookform.html", form=form)
 
-
-
-##
-# Book browsing route
-##
-@main.route('/books', methods=['GET','POST'])
-def books():
- 
-
-    form = LoginForm()       
-    # Search submit button
-    s_form = ConvInitForm()
-    
-    # If user hit login
-    if form.validate_on_submit():
-        process_login(form)
-        return redirect('/books')
-
-    # If user hit "search"
-    if s_form.validate_on_submit():
-        return search()
-    else:
-        allbooks = Book.query.order_by("id desc")
-      
-    return render_template('browse.html', form=form, s_form=s_form, allbooks=allbooks, searchState="All Books")
-
-
 ##
 # Conversation route
 ##
@@ -302,7 +275,44 @@ def conversation(cid):
     flash('Only conversation participants may view this page.', 'warning')
     # Redirect to previous  path
     return redirect(request.referrer)
+ 
+
+##
+# Book browsing route
+##
+@main.route('/books', methods=['GET','POST'])
+def books():
+ 
+
+    form = LoginForm()       
+    # Search submit button
+    s_form = SearchForm()
     
+    # If user hit login
+    if form.validate_on_submit():
+        process_login(form)
+        return redirect('/books')
+
+
+    if not s_form.location.data:
+        # Get user's location
+        if current_user.is_authenticated:
+            s_form.location.data = current_user.location
+
+        # If user's location unknown, load the default
+        else:
+            s_form.location.data = "University of Washington - Bothell"
+
+
+
+    # If user hit "search"
+    if s_form.validate_on_submit():
+        return search()
+    else:
+        allbooks = Book.query.order_by("id desc")
+      
+    return render_template('browse.html', form=form, s_form=s_form, allbooks=allbooks, searchState="All Books at " + s_form.location.data)
+
 
 ##
 # Searches database with user given search parameters. 
@@ -310,22 +320,37 @@ def conversation(cid):
 def search():
     form = LoginForm()
     # Search submit form
-    s_form = ConvInitForm()
+    s_form = SearchForm()
     
     # User has hit login
     if form.validate_on_submit():
         process_login(form)
 
-    search = request.form['search'];
+    # If no location data entered
+    if not s_form.location.data:
+        # Get user's location
+        if current_user.is_authenticated:
+            s_form.location.data = current_user.location
+
+        # If user's location unknown, load the default
+        else:
+            s_form.location.data = "University of Washington - Bothell"
+        
+        flash("No location entered. Using " + s_form.location.data, 'info')
+
+
+    search = s_form.search.data
+    location = s_form.location.data 
     searchState = "All Books"
 
     if len(search) > 0:
         # Searches if title contains the search parameter
-        allbooks = Book.query.filter( Book.title.contains(search) | Book.isbn.contains(search) | Book.author.contains(search) );
+        allbooks = Book.query.filter( Book.owner.has(location=location), Book.title.contains(search) | Book.isbn.contains(search) | Book.author.contains(search) );
+
         searchState = 'Results for \"'+ search + '\"';
     else:
         # User has entered a blank search, just display all books
-        allbooks = Book.query.order_by("id desc")
+        allbooks = Book.query.filter.Book.owner.has(location=location).order_by("id desc")
 
     return render_template('browse.html', form=form, s_form=s_form, allbooks=allbooks, searchState=searchState);
     
