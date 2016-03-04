@@ -47,6 +47,21 @@ class SignupForm(Form):
     def validate_username(self, field):
         if User.query.filter_by(username=field.data).first() or User.query.filter_by(username=field.data.lower()).first():
             raise ValidationError('Username already taken.')
+##
+# EditProfileForm for '/editprofile'
+##
+class EditProfileForm(Form):
+    email = StringField('Email', validators=[Required(), Length(1, 64), Email()])
+    username = StringField('username', validators=[Required(), Length(1,64), Regexp('^[a-zA-Z0-9][\._a-z0-9]*$', 0, 
+        'Your username may start with an upper- or lowercase letter or a number. Only lowercase letters, numbers, underscores, and periods may follow.')])
+
+    location = StringField('Location', validators=[Required(), Length(1,64)])
+
+    password = PasswordField('Password', validators = [Required(), EqualTo('password_confirmation', message='Your passwords must match.')]) 
+    password_confirmation = PasswordField('Confirm Password', validators = [Required()])
+
+    submit = SubmitField("Register")
+    
 
 ##
 # BookForm form for '/add' + editing books

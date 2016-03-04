@@ -7,7 +7,7 @@ from flask.ext.login import login_user, logout_user, login_required, current_use
 from .. import db
 from ..models import User, Book, Conversation, Message, Vote
 from . import main
-from . forms import LoginForm, SignupForm, BookForm, MessageForm, ConvInitForm, SearchForm, flash_errors, process_login
+from . forms import LoginForm, SignupForm, BookForm, MessageForm, ConvInitForm, SearchForm, EditProfileForm, flash_errors, process_login
 from datetime import datetime
 
 ##
@@ -77,6 +77,27 @@ def register():
     # Flash form errors for user
     flash_errors(form)
     return render_template('register.html', form=form, disable_user_login=True)
+
+@main.route('/editprofile', methods=['GET','POST'])
+def editprofile():
+    form = EditProfileForm()
+    form.location.data = current_user.location
+    form.username.data = current_user.username
+    form.email.data = current_user.email
+
+    if not current_user.is_authenticated:
+        return render_template('editprofile.html', form=form)
+
+    if form.validate_on_submit():
+        current_user.set_password = form.password.data
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        db.session.commit()
+        flash('Password has been changed!')
+        return redirect( url_for('main.profile', username=current_user.username))
+
+    flash_errors(form)
+    return render_template('editprofile.html', form=form)
 
 
 ##
@@ -207,8 +228,7 @@ def delete_book(t, iid):
 
 
 ##
-# Book editing route
-# (Currently only for adding)
+# Add book route
 ##
 @main.route('/add', methods=['GET', 'POST'])
 def edit_book():
@@ -235,6 +255,51 @@ def edit_book():
     # Render errors from BookForm if present
     flash_errors(form)
     return render_template("bookform.html", form=form)
+
+
+   
+##
+# Edit books route
+##
+@main.route('/add/<bookid>', methods=['GET', 'POST'])
+def modify_book(bookid):
+    form = BookForm()
+
+    book = Book.query.get( int(bookid) )
+    print book
+    
+
+    if current_user.is_anonymous:
+        flash("You must be logged-in to edit books.", "info")
+        return redirect( url_for('main.index') )
+
+    # User has hit "Save" on BookForm
+    if form.validate_on_submit():
+        book.title = form.title.data
+        book.author = form.author.data
+        book.price = form.price.data
+        book.isbn = form.isbn.data
+        book.condition = form.condition.data
+
+        db.session.commit()
+        flash("Book has been successfully edited", "success")
+
+        # Return user to their profile
+        return redirect( url_for('main.profile', username=current_user.username) )
+
+
+
+    form.author.data = book.author
+    form.price.data = book.price
+    form.isbn.data = book.isbn
+    form.condition.data = book.condition
+    form.title.data = book.title
+  
+
+    # Render errors from BookForm if present
+    flash_errors(form)
+    return render_template("bookform.html", form=form, book=book)
+
 
 ##
 # Conversation route
