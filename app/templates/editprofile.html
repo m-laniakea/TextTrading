@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Register for TextX{% endblock %}
+
+{% block page_content %}
+
+<div class="page-header">
+	<h1>Edit Your User Profile</h1>
+<P><B>Please edit your user information below:</B></P>
+
+<form action="" method="post" name="edit" class="form-group">
+ {{ form.hidden_tag() }}
+ 
+<div class="form-group col-md-4">
+	{{ form.username(class="form-control", placeholder="username") }}
+	{{ form.email(class="form-control", placeholder="email") }}
+	<p> Enter new location </p> 
+	{{ form.location(class="form-control", placeholder="location") }}
+<BR>Enter a new password (or leave blank to keep password the same)
+	{{ form.password(class="form-control", placeholder="password") }}
+    {{ form.password_confirmation(class="form-control", placeholder="comfirm password") }}
+    <p></p>
+    {{ form.submit(class="btn btn-success") }}
+		
+  </form>   
+</div>
+
+{% endblock %}

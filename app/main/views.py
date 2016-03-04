@@ -7,7 +7,7 @@ from flask.ext.login import login_user, logout_user, login_required, current_use
 from .. import db
 from ..models import User, Book, Conversation, Message, Vote
 from . import main
-from . forms import LoginForm, SignupForm, BookForm, MessageForm, ConvInitForm, SearchForm, flash_errors, process_login
+from . forms import LoginForm, SignupForm, BookForm, MessageForm, ConvInitForm, SearchForm, EditProfileForm, flash_errors, process_login
 from datetime import datetime
 
 ##
@@ -77,6 +77,27 @@ def register():
     # Flash form errors for user
     flash_errors(form)
     return render_template('register.html', form=form, disable_user_login=True)
+
+@main.route('/editprofile', methods=['GET','POST'])
+def editprofile():
+    form = EditProfileForm()
+    form.location.data = current_user.location
+    form.username.data = current_user.username
+    form.email.data = current_user.email
+
+    if not current_user.is_authenticated:
+        return render_template('editprofile.html', form=form)
+
+    if form.validate_on_submit():
+        current_user.set_password = form.password.data
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        db.session.commit()
+        flash('Password has been changed!')
+        return redirect( url_for('main.profile', username=current_user.username))
+
+    flash_errors(form)
+    return render_template('editprofile.html', form=form)
 
 
 ##
