@@ -293,10 +293,17 @@ def books():
         process_login(form)
         return redirect('/books')
 
-    if current_user.is_authenticated:
-        s_form.location.data = current_user.location
-    else:
-        s_form.location.data = "University of Washington - Bothell"
+
+    if not s_form.location.data:
+        # Get user's location
+        if current_user.is_authenticated:
+            s_form.location.data = current_user.location
+
+        # If user's location unknown, load the default
+        else:
+            s_form.location.data = "University of Washington - Bothell"
+
+
 
     # If user hit "search"
     if s_form.validate_on_submit():
@@ -304,7 +311,7 @@ def books():
     else:
         allbooks = Book.query.order_by("id desc")
       
-    return render_template('browse.html', form=form, s_form=s_form, allbooks=allbooks, searchState="All Books")
+    return render_template('browse.html', form=form, s_form=s_form, allbooks=allbooks, searchState="All Books at " + s_form.location.data)
 
 
 ##
@@ -319,18 +326,31 @@ def search():
     if form.validate_on_submit():
         process_login(form)
 
+    # If no location data entered
+    if not s_form.location.data:
+        # Get user's location
+        if current_user.is_authenticated:
+            s_form.location.data = current_user.location
+
+        # If user's location unknown, load the default
+        else:
+            s_form.location.data = "University of Washington - Bothell"
+        
+        flash("No location entered. Using " + s_form.location.data, 'info')
+
+
     search = s_form.search.data
-    loc = s_form.location.data 
+    location = s_form.location.data 
     searchState = "All Books"
 
     if len(search) > 0:
         # Searches if title contains the search parameter
-        allbooks = Book.query.filter( Book.owner.has(location=loc), Book.title.contains(search) | Book.isbn.contains(search) | Book.author.contains(search) );
+        allbooks = Book.query.filter( Book.owner.has(location=location), Book.title.contains(search) | Book.isbn.contains(search) | Book.author.contains(search) );
 
         searchState = 'Results for \"'+ search + '\"';
     else:
         # User has entered a blank search, just display all books
-        allbooks = Book.query.order_by("id desc")
+        allbooks = Book.query.filter.Book.owner.has(location=location).order_by("id desc")
 
     return render_template('browse.html', form=form, s_form=s_form, allbooks=allbooks, searchState=searchState);
     
