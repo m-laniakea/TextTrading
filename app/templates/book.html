@@ -30,6 +30,7 @@
   <a type="button" class="btn btn-warning" href="#">You must be logged in to contact the Owner</a>
   {% elif current_user == owner %}
   <a type="button" class="btn btn-danger" href="/d/b/{{ book.id }}">Delete This Book</a>
+  <a type="button" class="btn btn-primary" href="/add/{{ book.id }}">Edit This Book</a>
   {% else %}
   <form action="" name="Contact" class="form-group" method="post">
           {{ form2.hidden_tag() }}
